@@ -2,14 +2,17 @@
 
 import Link from 'next/link'
 import { useEditorStore } from '@/stores/editorStore'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { useReactToPrint } from 'react-to-print'
 import { Button } from '@/components/ui'
 import { Printer } from 'lucide-react'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
+import PrintableWeek from './components/PrintableWeek'
 
 export default function EditorPage() {
   const { agenda, createNewAgenda } = useEditorStore()
+  const printRef = useRef<HTMLDivElement>(null)
 
   // Crée un nouvel agenda au chargement si aucun n'existe
   useEffect(() => {
@@ -17,6 +20,14 @@ export default function EditorPage() {
       createNewAgenda()
     }
   }, [agenda, createNewAgenda])
+
+  // Configuration de l'impression
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `Planning_${agenda?.name || 'Agenda'}_${
+      new Date().toISOString().split('T')[0]
+    }`,
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -35,7 +46,11 @@ export default function EditorPage() {
 
           <div className="flex items-center gap-3">
             <Button variant="ghost">Enregistrer</Button>
-            <Button leftIcon={<Printer className="w-4 h-4" />}>
+            <Button
+              onClick={handlePrint}
+              leftIcon={<Printer className="w-4 h-4" />}
+              disabled={!agenda || agenda.members.length === 0}
+            >
               Exporter PDF
             </Button>
           </div>
@@ -54,6 +69,11 @@ export default function EditorPage() {
           <div>
             <WeekGrid />
           </div>
+        </div>
+
+        {/* Composant caché pour l'impression */}
+        <div className="hidden">
+          {agenda && <PrintableWeek ref={printRef} agenda={agenda} />}
         </div>
       </main>
     </div>
