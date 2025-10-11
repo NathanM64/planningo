@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { useEditorStore } from '@/stores/editorStore'
 import { useEffect } from 'react'
 import { Button } from '@/components/ui'
-import { Printer, Calendar } from 'lucide-react'
+import { Printer } from 'lucide-react'
 import MemberList from './components/MemberList'
+import WeekGrid from './components/WeekGrid'
 
 export default function EditorPage() {
   const { agenda, createNewAgenda } = useEditorStore()
@@ -42,29 +43,16 @@ export default function EditorPage() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-[300px_1fr] gap-6">
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-[320px_1fr] gap-6">
           {/* Sidebar gauche */}
-          <div>
+          <div className="space-y-6">
             <MemberList />
           </div>
 
           {/* Canvas principal */}
-          <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-16 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Calendar className="w-10 h-10 text-blue-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Grille en construction
-              </h2>
-              <p className="text-gray-600 mb-4">
-                La grille hebdomadaire arrivera dans la prochaine étape.
-              </p>
-              <p className="text-sm text-gray-500">
-                Pour l'instant, teste la gestion des membres à gauche !
-              </p>
-            </div>
+          <div>
+            <WeekGrid />
           </div>
         </div>
       </main>
