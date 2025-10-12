@@ -4,8 +4,8 @@ export const PLANS = {
     name: 'Mode test',
     description: 'Essayez gratuitement sans compte',
     price: 0,
-    color: 'orange', // Pour la UI
-    maxMembers: 3,
+    color: 'orange',
+    maxMembers: 2,
     maxAgendas: 1,
     canSave: false,
     canExportPdf: true,
@@ -15,14 +15,14 @@ export const PLANS = {
     hasSupport: false,
     features: [
       'Accès immédiat sans compte',
-      "Jusqu'à 3 membres",
-      'Export PDF avec watermark',
+      "Jusqu'à 2 membres",
+      'Export PDF avec marque Planningo',
       'Aucune sauvegarde',
     ],
     limitations: [
       'Données perdues à la fermeture',
       'Pas de sauvegarde cloud',
-      'Watermark sur les exports',
+      'Marque Planningo sur les PDF',
     ],
   },
   free: {
@@ -32,7 +32,7 @@ export const PLANS = {
     price: 0,
     color: 'blue',
     maxMembers: 5,
-    maxAgendas: 3,
+    maxAgendas: 1,
     canSave: true,
     canExportPdf: true,
     hasWatermark: 'small' as const,
@@ -42,12 +42,13 @@ export const PLANS = {
     features: [
       'Sauvegarde cloud',
       "Jusqu'à 5 membres par agenda",
-      '3 agendas maximum',
+      '1 agenda sauvegardé',
       'Export PDF',
       'Synchronisation multi-appareils',
     ],
     limitations: [
-      'Watermark sur les exports',
+      '1 seul agenda (supprimer pour créer un nouveau)',
+      'Petite signature Planningo sur les PDF',
       'Pas de thèmes personnalisés',
       'Support communautaire uniquement',
     ],
@@ -56,7 +57,7 @@ export const PLANS = {
     id: 'pro',
     name: 'Pro',
     description: 'Pour les équipes professionnelles',
-    price: 9.99, // €/mois
+    price: 9.99,
     color: 'gold',
     maxMembers: null, // Illimité
     maxAgendas: null, // Illimité
@@ -68,8 +69,8 @@ export const PLANS = {
     hasSupport: true,
     features: [
       'Membres illimités',
-      'Agendas illimités',
-      'Export PDF sans watermark',
+      'Agendas illimités', // ✅ Mise en avant
+      'PDF sans marque (100% votre marque)',
       'Thèmes personnalisés',
       "Partage d'agendas",
       'Templates premium',
@@ -83,9 +84,6 @@ export type PlanKey = keyof typeof PLANS
 export type PlanConfig = (typeof PLANS)[PlanKey]
 export type WatermarkSize = 'none' | 'small' | 'large'
 
-/**
- * Helper pour obtenir le plan d'un utilisateur
- */
 export function getUserPlan(
   isAuthenticated: boolean,
   isPro: boolean = false
@@ -95,9 +93,6 @@ export function getUserPlan(
   return 'test'
 }
 
-/**
- * Vérifier si une feature est disponible pour un plan
- */
 export function canUseFeature(
   plan: PlanKey,
   feature: keyof PlanConfig
@@ -106,39 +101,27 @@ export function canUseFeature(
   return Boolean(config[feature])
 }
 
-/**
- * Vérifier si un utilisateur peut ajouter un membre
- */
 export function canAddMember(currentCount: number, plan: PlanKey): boolean {
   const limit = PLANS[plan].maxMembers
-  if (limit === null) return true // Illimité
+  if (limit === null) return true
   return currentCount < limit
 }
 
-/**
- * Obtenir le nombre de membres restants
- */
 export function getRemainingMembers(
   currentCount: number,
   plan: PlanKey
 ): number | null {
   const limit = PLANS[plan].maxMembers
-  if (limit === null) return null // Illimité
+  if (limit === null) return null
   return Math.max(0, limit - currentCount)
 }
 
-/**
- * Vérifier si un utilisateur peut ajouter un agenda
- */
 export function canAddAgenda(currentCount: number, plan: PlanKey): boolean {
   const limit = PLANS[plan].maxAgendas
-  if (limit === null) return true // Illimité
+  if (limit === null) return true
   return currentCount < limit
 }
 
-/**
- * Obtenir les couleurs du plan pour la UI
- */
 export const PLAN_COLORS = {
   test: {
     bg: 'bg-orange-50',
@@ -160,9 +143,6 @@ export const PLAN_COLORS = {
   },
 } as const
 
-/**
- * Messages d'upgrade selon le plan actuel
- */
 export function getUpgradeMessage(currentPlan: PlanKey): {
   title: string
   description: string
@@ -172,7 +152,7 @@ export function getUpgradeMessage(currentPlan: PlanKey): {
   if (currentPlan === 'test') {
     return {
       title: 'Créez un compte gratuit',
-      description: 'Sauvegardez vos agendas et passez à 5 membres.',
+      description: 'Sauvegardez votre agenda et passez à 5 membres.',
       cta: 'Créer un compte',
       targetPlan: 'free',
     }
@@ -180,7 +160,7 @@ export function getUpgradeMessage(currentPlan: PlanKey): {
 
   return {
     title: 'Passez en Pro',
-    description: 'Membres illimités, export sans watermark et bien plus.',
+    description: 'Agendas illimités, membres illimités, PDF sans marque.',
     cta: 'Passer en Pro',
     targetPlan: 'pro',
   }

@@ -1,4 +1,3 @@
-// src/app/pricing/page.tsx
 'use client'
 
 import Link from 'next/link'
@@ -20,7 +19,6 @@ export default function PricingPage() {
     } else if (planKey === 'free') {
       router.push(user ? '/editor' : '/auth')
     } else if (planKey === 'pro') {
-      // TODO: Implémenter Stripe checkout
       alert('Paiement Stripe à venir ! 🚀')
     }
   }
@@ -237,6 +235,111 @@ export default function PricingPage() {
         </div>
       </div>
 
+      {/* Tableau comparatif simplifié */}
+      <div className="container mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+          Comparaison détaillée
+        </h2>
+        <div className="max-w-4xl mx-auto bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b-2 border-gray-200">
+              <tr>
+                <th className="text-left p-4 font-bold text-gray-900">
+                  Fonctionnalité
+                </th>
+                <th className="text-center p-4 font-bold text-orange-600">
+                  Test
+                </th>
+                <th className="text-center p-4 font-bold text-blue-600">
+                  Gratuit
+                </th>
+                <th className="text-center p-4 font-bold text-yellow-600">
+                  Pro
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              <tr>
+                <td className="p-4 text-gray-700">Nombre de membres</td>
+                <td className="p-4 text-center text-gray-600">2</td>
+                <td className="p-4 text-center text-gray-600">5</td>
+                <td className="p-4 text-center text-green-600 font-semibold">
+                  Illimité
+                </td>
+              </tr>
+              <tr className="bg-gray-50">
+                <td className="p-4 text-gray-700">
+                  Nombre d'agendas sauvegardés
+                </td>
+                <td className="p-4 text-center text-gray-600">
+                  1 (non sauvegardé)
+                </td>
+                <td className="p-4 text-center text-gray-600">1</td>
+                <td className="p-4 text-center text-green-600 font-semibold">
+                  Illimité
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 text-gray-700">Sauvegarde cloud</td>
+                <td className="p-4 text-center">
+                  <X className="w-5 h-5 text-red-500 mx-auto" />
+                </td>
+                <td className="p-4 text-center">
+                  <Check className="w-5 h-5 text-green-600 mx-auto" />
+                </td>
+                <td className="p-4 text-center">
+                  <Check className="w-5 h-5 text-green-600 mx-auto" />
+                </td>
+              </tr>
+              <tr className="bg-gray-50">
+                <td className="p-4 text-gray-700">Export PDF</td>
+                <td className="p-4 text-center">
+                  <Check className="w-5 h-5 text-green-600 mx-auto" />
+                </td>
+                <td className="p-4 text-center">
+                  <Check className="w-5 h-5 text-green-600 mx-auto" />
+                </td>
+                <td className="p-4 text-center">
+                  <Check className="w-5 h-5 text-green-600 mx-auto" />
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 text-gray-700">Marque sur les PDF</td>
+                <td className="p-4 text-center text-xs text-gray-600">
+                  Grande marque
+                </td>
+                <td className="p-4 text-center text-xs text-gray-600">
+                  Petite signature
+                </td>
+                <td className="p-4 text-center text-green-600 font-semibold">
+                  Aucune !
+                </td>
+              </tr>
+              <tr className="bg-gray-50">
+                <td className="p-4 text-gray-700">Thèmes personnalisés</td>
+                <td className="p-4 text-center">
+                  <X className="w-5 h-5 text-red-500 mx-auto" />
+                </td>
+                <td className="p-4 text-center">
+                  <X className="w-5 h-5 text-red-500 mx-auto" />
+                </td>
+                <td className="p-4 text-center">
+                  <Check className="w-5 h-5 text-green-600 mx-auto" />
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 text-gray-700">Support</td>
+                <td className="p-4 text-center text-xs text-gray-600">—</td>
+                <td className="p-4 text-center text-xs text-gray-600">Email</td>
+                <td className="p-4 text-center text-green-600 font-semibold">
+                  Prioritaire
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* FAQ Section */}
       <div className="bg-white border-t border-gray-200">
         <div className="container mx-auto px-4 py-16">
@@ -250,9 +353,20 @@ export default function PricingPage() {
                 Puis-je essayer avant de créer un compte ?
               </h3>
               <p className="text-gray-600">
-                Oui ! Le mode test vous permet de tester toutes les
-                fonctionnalités immédiatement sans créer de compte. Vos données
-                ne seront simplement pas sauvegardées.
+                Oui ! Le mode test vous permet de découvrir toutes les
+                fonctionnalités immédiatement, sans création de compte. Vos
+                données ne seront simplement pas sauvegardées.
+              </p>
+            </div>
+
+            <div className="border-2 border-gray-200 rounded-lg p-6">
+              <h3 className="font-bold text-gray-900 mb-2">
+                C'est quoi la "marque Planningo" sur les PDF ?
+              </h3>
+              <p className="text-gray-600">
+                C'est un petit texte discret qui apparaît sur vos plannings
+                imprimés (comme "Créé avec Planningo"). Avec le plan Pro, vos
+                PDF sont 100% à votre image, sans aucune mention.
               </p>
             </div>
 
@@ -261,20 +375,9 @@ export default function PricingPage() {
                 Puis-je changer de plan plus tard ?
               </h3>
               <p className="text-gray-600">
-                Absolument ! Vous pouvez upgrader vers Pro à tout moment. Le
-                passage de Test à Free est automatique lors de la création
-                d&apos;un compte.
-              </p>
-            </div>
-
-            <div className="border-2 border-gray-200 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 mb-2">
-                Que se passe-t-il si j&apos;annule mon abonnement Pro ?
-              </h3>
-              <p className="text-gray-600">
-                Vous conservez l&apos;accès Pro jusqu&apos;à la fin de la
-                période payée, puis vous repassez automatiquement en plan Free.
-                Vos données restent sauvegardées.
+                Absolument ! Vous pouvez passer au plan Pro à tout moment. Le
+                passage du mode Test au plan Gratuit se fait automatiquement en
+                créant un compte.
               </p>
             </div>
 
@@ -283,8 +386,8 @@ export default function PricingPage() {
                 Y a-t-il des frais cachés ?
               </h3>
               <p className="text-gray-600">
-                Non, aucun. Le prix affiché est le prix final. Pas de surprises,
-                pas de frais additionnels.
+                Non, jamais. Le prix affiché est le prix final, point. Pas de
+                surprises, pas de frais additionnels.
               </p>
             </div>
           </div>
@@ -298,8 +401,8 @@ export default function PricingPage() {
             Prêt à simplifier vos plannings ?
           </h2>
           <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-            Rejoignez des centaines d&apos;équipes qui utilisent déjà Planningo
-            pour organiser leurs plannings.
+            Rejoignez des centaines d'équipes qui utilisent déjà Planningo pour
+            organiser leurs plannings.
           </p>
           <Button
             onClick={() => router.push('/editor')}
