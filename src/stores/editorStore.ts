@@ -1,3 +1,4 @@
+// src/stores/editorStore.ts
 import { create } from 'zustand'
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -10,11 +11,17 @@ import {
   formatDateISO,
 } from '@/types/agenda'
 import { getRandomBlockColor } from '@/lib/colors'
+import { saveAgenda, loadAgenda, deleteAgenda } from '@/lib/agendaService'
 
 interface EditorState {
   // État actuel
   agenda: Agenda | null
   selectedBlockId: string | null
+
+  // États Supabase
+  isSaving: boolean
+  isLoading: boolean
+  lastSaved: string | null
 
   // Actions pour l'agenda
   setAgenda: (agenda: Agenda) => void
@@ -26,7 +33,7 @@ interface EditorState {
   updateMember: (id: string, updates: Partial<Member>) => void
   removeMember: (id: string) => void
 
-  // Actions pour les blocs
+  // Actions pour les blocs (avec memberIds au pluriel)
   addBlock: (block: Omit<AgendaBlock, 'id'>) => void
   updateBlock: (id: string, updates: Partial<AgendaBlock>) => void
   removeBlock: (id: string) => void
@@ -36,12 +43,20 @@ interface EditorState {
   goToPreviousWeek: () => void
   goToNextWeek: () => void
   goToToday: () => void
+
+  // Actions Supabase
+  saveToCloud: () => Promise<void>
+  loadFromCloud: (agendaId: string) => Promise<void>
+  deleteFromCloud: (agendaId: string) => Promise<void>
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
   // État initial
   agenda: null,
   selectedBlockId: null,
+  isSaving: false,
+  isLoading: false,
+  lastSaved: null,
 
   // Définir un agenda complet
   setAgenda: (agenda) => {
@@ -74,7 +89,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   // ========== MEMBRES ==========
 
-  // Ajouter un membre
   addMember: (name) => {
     const state = get()
     if (!state.agenda) return
@@ -94,7 +108,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Mettre à jour un membre
   updateMember: (id, updates) => {
     const state = get()
     if (!state.agenda) return
@@ -109,7 +122,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Supprimer un membre (et ses blocs)
+  // Supprimer un membre ET retirer son ID de tous les blocs
   removeMember: (id) => {
     const state = get()
     if (!state.agenda) return
@@ -118,14 +131,20 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       agenda: {
         ...state.agenda,
         members: state.agenda.members.filter((m) => m.id !== id),
-        blocks: state.agenda.blocks.filter((b) => b.memberId !== id),
+        // Retirer ce membre de tous les blocs
+        blocks: state.agenda.blocks
+          .map((block) => ({
+            ...block,
+            memberIds: block.memberIds.filter((mId) => mId !== id),
+          }))
+          // Supprimer les blocs qui n'ont plus aucun membre
+          .filter((block) => block.memberIds.length > 0),
       },
     })
   },
 
   // ========== BLOCS ==========
 
-  // Ajouter un bloc
   addBlock: (block) => {
     const state = get()
     if (!state.agenda) return
@@ -143,7 +162,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Mettre à jour un bloc
   updateBlock: (id, updates) => {
     const state = get()
     if (!state.agenda) return
@@ -158,7 +176,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Supprimer un bloc
   removeBlock: (id) => {
     const state = get()
     if (!state.agenda) return
@@ -173,14 +190,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Sélectionner un bloc
   selectBlock: (id) => {
     set({ selectedBlockId: id })
   },
 
   // ========== NAVIGATION ==========
 
-  // Aller à la semaine précédente
   goToPreviousWeek: () => {
     const state = get()
     if (!state.agenda) return
@@ -196,7 +211,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Aller à la semaine suivante
   goToNextWeek: () => {
     const state = get()
     if (!state.agenda) return
@@ -212,7 +226,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  // Aller à la semaine courante (aujourd'hui)
   goToToday: () => {
     const state = get()
     if (!state.agenda) return
@@ -226,5 +239,80 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         currentWeekStart: formatDateISO(monday),
       },
     })
+  },
+
+  // ========== SUPABASE ==========
+
+  saveToCloud: async () => {
+    const state = get()
+    if (!state.agenda) return
+
+    set({ isSaving: true })
+
+    try {
+      const result = await saveAgenda(state.agenda)
+
+      if (result.success) {
+        set({
+          lastSaved: new Date().toISOString(),
+          isSaving: false,
+        })
+        console.log('✅ Agenda sauvegardé')
+      } else {
+        console.error('❌ Erreur:', result.error)
+        set({ isSaving: false })
+        alert(`Erreur: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('❌ Erreur inattendue:', error)
+      set({ isSaving: false })
+      alert('Erreur de sauvegarde')
+    }
+  },
+
+  loadFromCloud: async (agendaId: string) => {
+    set({ isLoading: true })
+
+    try {
+      const result = await loadAgenda(agendaId)
+
+      if (result.success && result.data) {
+        set({
+          agenda: result.data,
+          selectedBlockId: null,
+          isLoading: false,
+          lastSaved: result.data.updated_at || null,
+        })
+        console.log('✅ Agenda chargé')
+      } else {
+        console.error('❌ Erreur:', result.error)
+        set({ isLoading: false })
+        alert(`Erreur: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('❌ Erreur inattendue:', error)
+      set({ isLoading: false })
+      alert('Erreur de chargement')
+    }
+  },
+
+  deleteFromCloud: async (agendaId: string) => {
+    try {
+      const result = await deleteAgenda(agendaId)
+
+      if (result.success) {
+        console.log('✅ Agenda supprimé')
+        const state = get()
+        if (state.agenda?.id === agendaId) {
+          state.createNewAgenda()
+        }
+      } else {
+        console.error('❌ Erreur:', result.error)
+        alert(`Erreur: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('❌ Erreur inattendue:', error)
+      alert('Erreur de suppression')
+    }
   },
 }))

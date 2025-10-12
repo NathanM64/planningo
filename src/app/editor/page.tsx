@@ -5,13 +5,13 @@ import { useEditorStore } from '@/stores/editorStore'
 import { useEffect, useRef } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { Button } from '@/components/ui'
-import { Printer } from 'lucide-react'
+import { Printer, Save } from 'lucide-react'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
 import PrintableWeek from './components/PrintableWeek'
 
 export default function EditorPage() {
-  const { agenda, createNewAgenda } = useEditorStore()
+  const { agenda, createNewAgenda, saveToCloud, isSaving } = useEditorStore()
   const printRef = useRef<HTMLDivElement>(null)
 
   // Crée un nouvel agenda au chargement si aucun n'existe
@@ -45,7 +45,14 @@ export default function EditorPage() {
           </Link>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost">Enregistrer</Button>
+            <Button
+              variant="ghost"
+              onClick={saveToCloud}
+              disabled={!agenda || isSaving}
+              leftIcon={isSaving ? undefined : <Save className="w-4 h-4" />}
+            >
+              {isSaving ? 'Enregistrement...' : 'Enregistrer'}
+            </Button>
             <Button
               onClick={handlePrint}
               leftIcon={<Printer className="w-4 h-4" />}

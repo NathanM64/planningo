@@ -1,3 +1,4 @@
+// src/app/editor/components/WeekGrid.tsx
 'use client'
 
 import { useState } from 'react'
@@ -10,13 +11,11 @@ import { Button } from '@/components/ui'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 import BlockModal from './BlockModal'
 
-// Heures de 8h à 18h
 const HOURS = Array.from({ length: 11 }, (_, i) => i + 8)
 
 export default function WeekGrid() {
   const { agenda, goToPreviousWeek, goToNextWeek, goToToday } = useEditorStore()
 
-  // État du modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMemberId, setModalMemberId] = useState<string | undefined>()
   const [modalDate, setModalDate] = useState<string | undefined>()
@@ -64,47 +63,49 @@ export default function WeekGrid() {
               onClick={goToToday}
               leftIcon={<Calendar className="w-4 h-4" />}
             >
-              Aujourd'hui
+              Aujourd&apos;hui
             </Button>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={goToPreviousWeek}>
-              <ChevronLeft className="w-4 h-4" />
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={goToPreviousWeek}
+              leftIcon={<ChevronLeft className="w-4 h-4" />}
+            >
+              Précédente
             </Button>
-            <Button size="sm" variant="outline" onClick={goToNextWeek}>
-              <ChevronRight className="w-4 h-4" />
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={goToNextWeek}
+              rightIcon={<ChevronRight className="w-4 h-4" />}
+            >
+              Suivante
             </Button>
           </div>
         </div>
 
         {/* Message si pas de membres */}
-        {!hasMembers && (
-          <div className="p-12 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Calendar className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Aucun membre dans l'équipe
-              </h3>
-              <p className="text-gray-600">
-                Ajoutez des membres dans la barre latérale pour commencer à
-                créer votre planning.
-              </p>
-            </div>
+        {!hasMembers ? (
+          <div className="p-8 text-center text-gray-500">
+            <p className="text-lg font-semibold mb-2">
+              Aucun membre dans l&apos;équipe
+            </p>
+            <p className="text-sm">
+              Ajoutez des membres dans la sidebar pour commencer
+            </p>
           </div>
-        )}
-
-        {/* Grille avec membres */}
-        {hasMembers && (
+        ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
-              {/* En-tête des jours */}
+            <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="w-32 p-3 text-left text-sm font-semibold text-gray-700 border-r-2 border-gray-200 sticky left-0 bg-gray-50 z-10">
-                    Membre
+                  <th className="p-3 border-r-2 border-gray-200 sticky left-0 z-20 bg-gray-50 min-w-[150px]">
+                    <span className="text-sm font-bold text-gray-700">
+                      Membre
+                    </span>
                   </th>
                   {weekDays.map((day, index) => {
                     const isToday =
@@ -112,7 +113,7 @@ export default function WeekGrid() {
                     return (
                       <th
                         key={index}
-                        className={`p-3 text-center text-sm font-semibold border-r border-gray-200 min-w-[120px] ${
+                        className={`p-3 border-r border-gray-200 text-center min-w-[120px] ${
                           isToday ? 'bg-blue-50 text-blue-900' : 'text-gray-700'
                         }`}
                       >
@@ -150,49 +151,60 @@ export default function WeekGrid() {
                       const dateISO = formatDateISO(day)
                       const isToday = dateISO === formatDateISO(new Date())
 
-                      // Récupérer les blocs de ce membre pour ce jour
+                      // 🆕 Récupérer les blocs qui contiennent ce membre pour ce jour
                       const blocksForDay = agenda.blocks.filter(
                         (block) =>
-                          block.memberId === member.id && block.date === dateISO
+                          block.memberIds.includes(member.id) &&
+                          block.date === dateISO
                       )
 
                       return (
                         <td
                           key={dayIndex}
-                          className={`relative border-r border-gray-200 align-top p-2 ${
+                          className={`relative border-r border-gray-200 align-top p-2 cursor-pointer hover:bg-gray-50 transition ${
                             isToday ? 'bg-blue-50/30' : ''
                           }`}
-                          style={{ height: '120px' }}
+                          style={{ minHeight: '100px' }}
+                          onClick={() => handleCreateBlock(member.id, dateISO)}
                         >
-                          {/* Zone cliquable pour ajouter un créneau */}
-                          <div
-                            className="w-full h-full rounded hover:bg-gray-100 cursor-pointer transition flex flex-col gap-1 p-1"
-                            onClick={() =>
-                              handleCreateBlock(member.id, dateISO)
-                            }
-                          >
-                            {/* Afficher les blocs existants */}
-                            {blocksForDay.map((block) => (
-                              <div
-                                key={block.id}
-                                className="rounded px-2 py-1 text-xs font-medium cursor-pointer hover:opacity-80 transition"
-                                style={{
-                                  backgroundColor: member.color,
-                                  color: 'white',
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleEditBlock(block)
-                                }}
-                              >
-                                <div className="font-bold">
-                                  {block.start} - {block.end}
+                          {/* Afficher les blocs */}
+                          <div className="space-y-1">
+                            {blocksForDay.map((block) => {
+                              // 🆕 Afficher combien de membres sont sur ce bloc
+                              const memberCount = block.memberIds.length
+                              const isMultiMember = memberCount > 1
+
+                              return (
+                                <div
+                                  key={block.id}
+                                  className="rounded p-2 text-xs cursor-pointer hover:opacity-80 transition"
+                                  style={{
+                                    backgroundColor: member.color + '40',
+                                    borderLeft: `3px solid ${member.color}`,
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleEditBlock(block)
+                                  }}
+                                >
+                                  <div className="font-semibold">
+                                    {block.start} - {block.end}
+                                  </div>
+                                  {block.label && (
+                                    <div className="text-gray-700 mt-1">
+                                      {block.label}
+                                    </div>
+                                  )}
+                                  {/* 🆕 Badge si plusieurs membres */}
+                                  {isMultiMember && (
+                                    <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                                      <span>👥</span>
+                                      <span>{memberCount} membres</span>
+                                    </div>
+                                  )}
                                 </div>
-                                {block.label && (
-                                  <div className="truncate">{block.label}</div>
-                                )}
-                              </div>
-                            ))}
+                              )
+                            })}
                           </div>
                         </td>
                       )
@@ -205,7 +217,7 @@ export default function WeekGrid() {
         )}
       </div>
 
-      {/* Modal de création/édition */}
+      {/* Modal */}
       <BlockModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

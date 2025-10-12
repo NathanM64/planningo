@@ -1,51 +1,51 @@
-// Types de base pour les agendas Planningo - Version avec membres
+// src/types/agenda.ts - Version avec support multi-membres
 
 export interface Member {
   id: string
   name: string
-  color: string // Référence à une couleur de blockColors
+  color: string
 }
 
+// ⚠️ CHANGEMENT : memberId devient memberIds (array)
 export interface AgendaBlock {
   id: string
-  memberId: string // ID du membre assigné
-  date: string // Date ISO "2025-11-04"
+  memberIds: string[] // 🆕 Tableau de IDs au lieu d'un seul
+  date: string // "2025-11-04"
   start: string // "09:00"
   end: string // "13:00"
-  label?: string // "Matin", "Réunion", etc. (optionnel)
+  label?: string
 }
 
 export interface Agenda {
   id: string
   user_id?: string
   name: string
-  members: Member[] // Liste des membres de l'équipe
+  members: Member[]
   blocks: AgendaBlock[]
   layout: 'daily' | 'weekly' | 'monthly'
-  currentWeekStart: string // Date ISO du lundi de la semaine courante
+  currentWeekStart: string
   created_at?: string
   updated_at?: string
 }
 
-// Utilitaire pour créer un membre vide
+// Utilitaires inchangés
 export const createEmptyMember = (): Omit<Member, 'id'> => ({
   name: 'Nouveau membre',
-  color: '#3B82F6', // Bleu par défaut
+  color: '#3B82F6',
 })
 
-// Utilitaire pour créer un bloc vide
+// 🆕 Utilitaire mis à jour pour memberIds
 export const createEmptyBlock = (
-  memberId: string,
+  memberIds: string[], // Peut être vide ou contenir plusieurs IDs
   date: string
 ): Omit<AgendaBlock, 'id'> => ({
-  memberId,
+  memberIds, // 🆕
   date,
   start: '09:00',
   end: '10:00',
   label: '',
 })
 
-// Utilitaire pour créer un agenda vide
 export const createEmptyAgenda = (): Omit<
   Agenda,
   'id' | 'created_at' | 'updated_at'
@@ -62,7 +62,7 @@ export const createEmptyAgenda = (): Omit<
   }
 }
 
-// Helper pour obtenir le lundi de la semaine
+// Helpers dates inchangés
 export const getMonday = (date: Date): Date => {
   const d = new Date(date)
   const day = d.getDay()
@@ -70,7 +70,6 @@ export const getMonday = (date: Date): Date => {
   return new Date(d.setDate(diff))
 }
 
-// Helper pour obtenir les 7 jours d'une semaine
 export const getWeekDays = (mondayDate: string): Date[] => {
   const monday = new Date(mondayDate)
   return Array.from({ length: 7 }, (_, i) => {
@@ -80,7 +79,6 @@ export const getWeekDays = (mondayDate: string): Date[] => {
   })
 }
 
-// Helper pour formater une date en ISO (YYYY-MM-DD)
 export const formatDateISO = (date: Date): string => {
   return date.toISOString().split('T')[0]
 }
