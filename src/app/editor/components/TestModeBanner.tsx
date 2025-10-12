@@ -2,45 +2,48 @@
 
 import { useRouter } from 'next/navigation'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { useTelemetry } from '@/hooks/useTelemetry'
 import { Button } from '@/components/ui'
 import { AlertTriangle, X } from 'lucide-react'
 import { useState } from 'react'
 
 export default function TestModeBanner() {
   const router = useRouter()
-  const { isTest } = usePlanLimits()
+  const { isTest, upgradeMessage, colors } = usePlanLimits()
+  const { trackUpgradeClick } = useTelemetry()
   const [isDismissed, setIsDismissed] = useState(false)
 
   if (!isTest || isDismissed) return null
 
+  const handleUpgrade = () => {
+    trackUpgradeClick('test', 'free')
+    router.push('/auth')
+  }
+
   return (
-    <div className="bg-orange-50 border-b-2 border-orange-200">
+    <div className={`${colors.bg} border-b-2 ${colors.border}`}>
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
-            <AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0" />
+            <AlertTriangle className={`w-5 h-5 ${colors.text} flex-shrink-0`} />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-orange-900">
-                Mode test - Vos données ne seront PAS sauvegardées
+              <p className={`text-sm font-semibold ${colors.text}`}>
+                ⚠️ {upgradeMessage.title}
               </p>
-              <p className="text-xs text-orange-700">
-                Créez un compte gratuit pour sauvegarder dans le cloud et
-                augmenter à 5 membres
+              <p className={`text-xs ${colors.text} opacity-90`}>
+                {upgradeMessage.description} Vos données ne sont PAS
+                sauvegardées.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="accent"
-              onClick={() => router.push('/auth')}
-            >
-              Créer un compte
+            <Button size="sm" variant="accent" onClick={handleUpgrade}>
+              {upgradeMessage.cta}
             </Button>
             <button
               onClick={() => setIsDismissed(true)}
-              className="text-orange-600 hover:text-orange-800 transition"
+              className={`${colors.text} hover:opacity-70 transition`}
             >
               <X className="w-4 h-4" />
             </button>

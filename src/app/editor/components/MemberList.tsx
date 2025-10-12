@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useEditorStore } from '@/stores/editorStore'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { useTelemetry } from '@/hooks/useTelemetry'
 import {
   Button,
   Input,
@@ -18,12 +19,15 @@ export default function MemberList() {
   const router = useRouter()
   const { agenda, addMember, updateMember, removeMember } = useEditorStore()
   const {
-    plan,
-    limits,
     canAddMember: canAdd,
-    getRemainingMembers,
+    formatMemberLimit,
+    upgradeMessage,
+    colors,
     isTest,
+    isFree,
   } = usePlanLimits()
+  const { trackMemberAdd, trackLimitReached, trackUpgradeClick } =
+    useTelemetry()
 
   const [isAdding, setIsAdding] = useState(false)
   const [newMemberName, setNewMemberName] = useState('')
@@ -33,16 +37,17 @@ export default function MemberList() {
 
   const currentMemberCount = agenda?.members.length || 0
   const canAddMore = canAdd(currentMemberCount)
-  const remaining = getRemainingMembers(currentMemberCount)
 
   const handleAddMember = () => {
     if (!canAddMore) {
+      trackLimitReached('members')
       setShowUpgradeModal(true)
       return
     }
 
     if (newMemberName.trim()) {
       addMember(newMemberName.trim())
+      trackMemberAdd()
       setNewMemberName('')
       setIsAdding(false)
     }
@@ -66,6 +71,12 @@ export default function MemberList() {
     setEditingName('')
   }
 
+  const handleUpgrade = () => {
+    trackUpgradeClick(isTest ? 'test' : 'free', isTest ? 'free' : 'pro')
+    router.push(isTest ? '/auth' : '/pricing')
+    setShowUpgradeModal(false)
+  }
+
   if (!agenda) return null
 
   return (
@@ -74,36 +85,40 @@ export default function MemberList() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Membres de l&apos;équipe</CardTitle>
-            {remaining !== null && (
-              <span className="text-xs text-gray-500">
-                {remaining} / {limits.maxMembers} restants
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-xs font-medium ${
+                  canAddMore ? 'text-gray-500' : colors.text
+                }`}
+              >
+                {formatMemberLimit(currentMemberCount)}
               </span>
-            )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
-          {/* Alerte limite */}
+          {/* Alerte limite atteinte */}
           {!canAddMore && (
-            <div className="mb-4 p-3 bg-orange-50 border-2 border-orange-200 rounded-lg">
+            <div
+              className={`mb-4 p-3 ${colors.bg} border-2 ${colors.border} rounded-lg`}
+            >
               <div className="flex items-start gap-2">
-                <Lock className="w-4 h-4 text-orange-600 mt-0.5" />
+                <Lock className={`w-4 h-4 ${colors.text} mt-0.5`} />
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-orange-900">
+                  <p className={`text-sm font-semibold ${colors.text}`}>
                     Limite atteinte
                   </p>
-                  <p className="text-xs text-orange-700 mt-1">
-                    {isTest
-                      ? 'Mode test : 3 membres max'
-                      : 'Compte gratuit : 5 membres max'}
+                  <p className={`text-xs ${colors.text} opacity-90 mt-1`}>
+                    {upgradeMessage.description}
                   </p>
                   <Button
                     size="sm"
                     variant="accent"
                     className="mt-2"
-                    onClick={() => router.push('/auth')}
+                    onClick={() => setShowUpgradeModal(true)}
                     leftIcon={<Crown className="w-3 h-3" />}
                   >
-                    {isTest ? 'Créer un compte' : 'Passer en Pro'}
+                    {upgradeMessage.cta}
                   </Button>
                 </div>
               </div>
@@ -137,7 +152,7 @@ export default function MemberList() {
                     <Input
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
-                      className="flex-1"
+                      className="flex-1 text-sm py-1"
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleSaveEdit()
@@ -148,14 +163,18 @@ export default function MemberList() {
                       size="sm"
                       variant="ghost"
                       onClick={handleSaveEdit}
-                      leftIcon={<Check className="w-3 h-3" />}
-                    />
+                      className="p-1 h-auto"
+                    >
+                      <Check className="w-4 h-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={handleCancelEdit}
-                      leftIcon={<X className="w-3 h-3" />}
-                    />
+                      className="p-1 h-auto"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -166,14 +185,18 @@ export default function MemberList() {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleStartEdit(member.id, member.name)}
-                      leftIcon={<Edit2 className="w-3 h-3" />}
-                    />
+                      className="p-1 h-auto"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => removeMember(member.id)}
-                      leftIcon={<Trash2 className="w-3 h-3" />}
-                    />
+                      className="p-1 h-auto text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </>
                 )}
               </div>
@@ -197,30 +220,24 @@ export default function MemberList() {
                 }}
               />
               <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={handleAddMember}
-                  disabled={!newMemberName.trim()}
-                  leftIcon={<Check className="w-3 h-3" />}
-                >
+                <Button onClick={handleAddMember} size="sm" className="flex-1">
+                  <Check className="w-4 h-4 mr-1" />
                   Ajouter
                 </Button>
                 <Button
-                  size="sm"
-                  variant="ghost"
                   onClick={() => {
                     setIsAdding(false)
                     setNewMemberName('')
                   }}
+                  variant="outline"
+                  size="sm"
                 >
-                  Annuler
+                  <X className="w-4 h-4" />
                 </Button>
               </div>
             </div>
           ) : (
             <Button
-              variant="outline"
-              className="w-full"
               onClick={() => {
                 if (canAddMore) {
                   setIsAdding(true)
@@ -228,6 +245,8 @@ export default function MemberList() {
                   setShowUpgradeModal(true)
                 }
               }}
+              variant={canAddMore ? 'secondary' : 'outline'}
+              className="w-full"
               leftIcon={
                 canAddMore ? (
                   <Plus className="w-4 h-4" />
@@ -235,7 +254,7 @@ export default function MemberList() {
                   <Lock className="w-4 h-4" />
                 )
               }
-              disabled={!canAddMore && isTest}
+              disabled={!canAddMore}
             >
               {canAddMore ? 'Ajouter un membre' : 'Limite atteinte'}
             </Button>
@@ -253,27 +272,25 @@ export default function MemberList() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center">
-                  <Crown className="w-6 h-6 text-orange-600" />
+                <div
+                  className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center`}
+                >
+                  <Crown className={`w-6 h-6 ${colors.text}`} />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900">
-                  Limite atteinte
+                  {upgradeMessage.title}
                 </h2>
               </div>
 
-              <p className="text-gray-600 mb-6">
-                {isTest
-                  ? 'Vous avez atteint la limite de 3 membres en mode test. Créez un compte gratuit pour passer à 5 membres et sauvegarder vos agendas.'
-                  : 'Vous avez atteint la limite de 5 membres. Passez en Pro pour avoir des membres illimités !'}
-              </p>
+              <p className="text-gray-600 mb-6">{upgradeMessage.description}</p>
 
               <div className="space-y-2">
                 <Button
                   className="w-full"
-                  onClick={() => router.push(isTest ? '/auth' : '/pricing')}
+                  onClick={handleUpgrade}
                   leftIcon={<Crown className="w-4 h-4" />}
                 >
-                  {isTest ? 'Créer un compte gratuit' : 'Passer en Pro'}
+                  {upgradeMessage.cta}
                 </Button>
                 <Button
                   variant="ghost"
