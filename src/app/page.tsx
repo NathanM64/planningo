@@ -32,6 +32,12 @@ export default function Home() {
             >
               Tarifs
             </Link>
+            <Link
+              href="/dashboard"
+              className="text-gray-600 hover:text-gray-900 transition"
+            >
+              Mes agendas
+            </Link>
             <Link href="/editor">
               <Button size="sm">Commencer</Button>
             </Link>
@@ -61,9 +67,8 @@ export default function Home() {
           </h2>
 
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            L&apos;outil simple et efficace pour créer des plannings
-            personnalisés pour votre équipe. Sans complexité, juste
-            l&apos;essentiel.
+            L'outil simple et efficace pour créer des plannings personnalisés
+            pour votre équipe. Sans complexité, juste l'essentiel.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -126,7 +131,7 @@ export default function Home() {
               </h4>
               <p className="text-gray-600">
                 Imprimez vos plannings en un clic. Format optimisé pour
-                l&apos;impression et l&apos;affichage.
+                l'impression et l'affichage.
               </p>
             </div>
           </div>

@@ -62,12 +62,18 @@ export default function EditorPage() {
     },
   })
 
-  const handleSaveOrAuth = () => {
+  const handleSaveOrAuth = async () => {
     if (isTest) {
       trackUpgradeClick('test', 'free')
       router.push('/auth')
     } else {
-      saveToCloud()
+      // Mettre à jour le user_id avant de sauvegarder
+      if (user && agenda) {
+        useEditorStore.setState({
+          agenda: { ...agenda, user_id: user.id },
+        })
+      }
+      await saveToCloud()
       trackAgendaSave()
     }
   }
@@ -100,10 +106,23 @@ export default function EditorPage() {
                 <div className="w-8 h-8 bg-[#0000EE] rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">P</span>
                 </div>
-                <span className="font-bold text-xl text-gray-900">
+                <span className="font-bold text-xl text-gray-900 hidden sm:inline">
                   Planningo
                 </span>
               </Link>
+
+              {/* Nom de l'agenda éditable */}
+              {agenda && (
+                <input
+                  type="text"
+                  value={agenda.name}
+                  onChange={(e) =>
+                    useEditorStore.getState().updateAgendaName(e.target.value)
+                  }
+                  className="font-semibold text-gray-900 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 outline-none px-2 py-1 transition max-w-[200px] sm:max-w-xs"
+                  placeholder="Nom de l'agenda"
+                />
+              )}
 
               <PlanBadge showUpgrade onUpgradeClick={handleUpgrade} />
             </div>
@@ -117,28 +136,34 @@ export default function EditorPage() {
                 </span>
               )}
 
+              {/* Bouton Mes agendas (si connecté et peut sauvegarder) */}
+              {user && can('canSave') && (
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  <span className="hidden sm:inline">Mes agendas</span>
+                  <span className="sm:hidden">Agendas</span>
+                </Button>
+              )}
+
               {/* Bouton Sauvegarder / Se connecter */}
               <Button
                 variant={isTest ? 'primary' : 'ghost'}
                 onClick={handleSaveOrAuth}
                 disabled={!agenda || (!isTest && isSaving) || !can('canSave')}
-                leftIcon={
-                  isSaving ? undefined : isTest ? (
-                    <Cloud className="w-4 h-4" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )
-                }
+                leftIcon={isSaving ? undefined : <Save className="w-4 h-4" />}
               >
                 {isSaving
                   ? 'Enregistrement...'
                   : isTest
-                  ? '💾 Sauvegarder dans le cloud'
+                  ? 'Sauvegarder dans le cloud'
                   : 'Enregistrer'}
               </Button>
 
               {/* Bouton Export PDF */}
               <Button
+                variant="primary"
                 onClick={handlePrint}
                 leftIcon={<Printer className="w-4 h-4" />}
                 disabled={
