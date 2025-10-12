@@ -187,31 +187,38 @@ export default function PricingPage() {
                   </div>
 
                   {/* CTA */}
-                  <Button
-                    onClick={() => handleSelectPlan(key)}
-                    variant={
-                      highlight
-                        ? 'primary'
-                        : isCurrent
-                        ? 'outline'
-                        : 'secondary'
-                    }
-                    className="w-full mb-6"
-                    rightIcon={
-                      !isCurrent ? (
-                        <ArrowRight className="w-4 h-4" />
-                      ) : undefined
-                    }
-                    disabled={isCurrent && !isUpgrade}
-                  >
-                    {isCurrent
-                      ? 'Plan actuel'
-                      : key === 'test'
-                      ? 'Essayer maintenant'
-                      : key === 'free'
-                      ? 'Créer un compte'
-                      : 'Passer en Pro'}
-                  </Button>
+                  {key === 'pro' ? (
+                    <CheckoutButton
+                      variant={highlight ? 'primary' : 'secondary'}
+                      className="w-full mb-6"
+                    >
+                      {isCurrent ? 'Plan actuel' : 'Passer en Pro'}
+                    </CheckoutButton>
+                  ) : (
+                    <Button
+                      onClick={() => handleSelectPlan(key)}
+                      variant={
+                        highlight
+                          ? 'primary'
+                          : isCurrent
+                          ? 'outline'
+                          : 'secondary'
+                      }
+                      className="w-full mb-6"
+                      rightIcon={
+                        !isCurrent ? (
+                          <ArrowRight className="w-4 h-4" />
+                        ) : undefined
+                      }
+                      disabled={isCurrent && !isUpgrade}
+                    >
+                      {isCurrent
+                        ? 'Plan actuel'
+                        : key === 'test'
+                        ? 'Essayer maintenant'
+                        : 'Créer un compte'}
+                    </Button>
+                  )}
 
                   {/* Features */}
                   <div className="space-y-3">

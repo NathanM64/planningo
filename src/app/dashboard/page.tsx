@@ -436,14 +436,9 @@ export default function DashboardPage() {
               >
                 Plus tard
               </Button>
-              <Button
-                onClick={() => router.push('/pricing')}
-                variant="primary"
-                className="flex-1"
-                leftIcon={<Crown className="w-4 h-4" />}
-              >
-                Passer Pro
-              </Button>
+              <CheckoutButton variant="primary" className="flex-1">
+                Passer en Pro
+              </CheckoutButton>
             </div>
           </div>
         </div>

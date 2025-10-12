@@ -1,18 +1,15 @@
 // src/app/api/create-checkout/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  stripe,
-  STRIPE_PRICE_ID,
-  getSuccessUrl,
-  getCancelUrl,
-} from '@/lib/stripe'
-import { createServerClient } from '@supabase/ssr'
+import { stripe, getSuccessUrl, getCancelUrl } from '@/lib/stripe-server'
+import { STRIPE_PRICE_ID } from '@/lib/stripe'
 import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
 export async function POST(request: NextRequest) {
   try {
-    // Récupérer l'utilisateur connecté
+    // Créer le client Supabase côté serveur
     const cookieStore = await cookies()
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -29,11 +26,14 @@ export async function POST(request: NextRequest) {
         },
       }
     )
+
+    // Récupérer l'utilisateur connecté
     const {
       data: { user },
+      error: userError,
     } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 

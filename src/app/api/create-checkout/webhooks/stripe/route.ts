@@ -1,6 +1,6 @@
 // src/app/api/webhooks/stripe/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { stripe } from '@/lib/stripe-server'
 import { supabase } from '@/lib/supabaseClient'
 import Stripe from 'stripe'
 
