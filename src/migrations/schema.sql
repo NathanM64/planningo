@@ -58,6 +58,25 @@ CREATE TABLE public.blocks_members (
   PRIMARY KEY (block_id, member_id)
 );
 
+CREATE TABLE IF NOT EXISTS public.users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  is_pro BOOLEAN DEFAULT FALSE,
+  stripe_customer_id TEXT,
+  stripe_subscription_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own data"
+  ON public.users FOR SELECT
+  USING (auth.uid() = id);
+
+CREATE POLICY "Users can update their own data"
+  ON public.users FOR UPDATE
+  USING (auth.uid() = id);
+
 -- 3. INDEX POUR PERFORMANCES
 -- ========================================
 

@@ -1,3 +1,4 @@
+// src/app/pricing/page.tsx
 'use client'
 
 import Link from 'next/link'
@@ -6,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { PLANS } from '@/config/plans'
 import { Button } from '@/components/ui'
+import CheckoutButton from '@/components/CheckoutButton'
 import { Check, X, ArrowRight, Crown, Zap, TestTube } from 'lucide-react'
 
 export default function PricingPage() {
@@ -58,9 +60,20 @@ export default function PricingPage() {
 
           <div className="flex items-center gap-3">
             {user ? (
-              <Button variant="outline" onClick={() => router.push('/editor')}>
-                Mon éditeur
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  Mes agendas
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/editor')}
+                >
+                  Mon éditeur
+                </Button>
+              </>
             ) : (
               <>
                 <Button variant="ghost" onClick={() => router.push('/auth')}>
@@ -356,6 +369,18 @@ export default function PricingPage() {
                 Oui ! Le mode test vous permet de découvrir toutes les
                 fonctionnalités immédiatement, sans création de compte. Vos
                 données ne seront simplement pas sauvegardées.
+              </p>
+            </div>
+
+            <div className="border-2 border-gray-200 rounded-lg p-6">
+              <h3 className="font-bold text-gray-900 mb-2">
+                Pourquoi 1 seul agenda en plan gratuit ?
+              </h3>
+              <p className="text-gray-600">
+                La plupart des petites équipes n'ont besoin que d'un planning
+                actif à la fois. Si vous avez besoin de gérer plusieurs
+                plannings (par exemple un par local, ou historique), le plan Pro
+                débloque cette fonctionnalité.
               </p>
             </div>
 

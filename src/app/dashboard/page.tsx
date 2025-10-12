@@ -9,6 +9,7 @@ import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button } from '@/components/ui'
+import CheckoutButton from '@/components/CheckoutButton'
 import {
   Calendar,
   Plus,
@@ -421,7 +422,7 @@ export default function DashboardPage() {
 
             <div className="text-center mb-6">
               <div className="text-3xl font-bold text-gray-900 mb-1">
-                9,99€
+                5€
                 <span className="text-lg text-gray-600 font-normal">/mois</span>
               </div>
               <p className="text-sm text-gray-600">Sans engagement</p>

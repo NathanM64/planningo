@@ -1,6 +1,9 @@
+// src/hooks/usePlanLimits.ts
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabaseClient'
 import {
   getUserPlan,
   PLANS,
@@ -16,13 +19,54 @@ import {
 
 /**
  * Hook principal pour gérer les limites freemium
- * Expose des helpers ergonomiques pour vérifier les permissions
+ * Charge le statut Pro depuis la BDD
  */
 export function usePlanLimits() {
   const { user } = useAuth()
+  const [isPro, setIsPro] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  // TODO: Récupérer isPro depuis la BDD (users.is_pro)
-  const isPro = false
+  // Charger le statut Pro depuis la BDD
+  useEffect(() => {
+    const fetchProStatus = async () => {
+      if (!user) {
+        setIsPro(false)
+        setLoading(false)
+        return
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('is_pro')
+          .eq('id', user.id)
+          .single()
+
+        if (error) {
+          // Si l'utilisateur n'existe pas encore dans users, le créer
+          if (error.code === 'PGRST116') {
+            await supabase.from('users').insert({
+              id: user.id,
+              is_pro: false,
+            })
+            setIsPro(false)
+          } else {
+            console.error('Erreur chargement statut Pro:', error)
+            setIsPro(false)
+          }
+        } else {
+          setIsPro(data?.is_pro || false)
+        }
+      } catch (err) {
+        console.error('Erreur:', err)
+        setIsPro(false)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProStatus()
+  }, [user])
 
   const planKey: PlanKey = getUserPlan(!!user, isPro)
   const config: PlanConfig = PLANS[planKey]
@@ -36,6 +80,7 @@ export function usePlanLimits() {
     config,
     colors,
     upgradeMessage,
+    loading,
 
     // Plan booleans
     isTest: planKey === 'test',

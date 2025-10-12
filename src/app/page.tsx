@@ -74,7 +74,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/editor">
               <Button size="lg" rightIcon={<ArrowRight className="w-5 h-5" />}>
-                Essayer gratuitement
+                Créer mon premier agenda
               </Button>
             </Link>
             <Link href="/pricing">

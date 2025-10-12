@@ -1,3 +1,4 @@
+// src/config/plans.ts
 export const PLANS = {
   test: {
     id: 'test',
@@ -5,7 +6,7 @@ export const PLANS = {
     description: 'Essayez gratuitement sans compte',
     price: 0,
     color: 'orange',
-    maxMembers: 2,
+    maxMembers: 2, // ⬇️ Réduit de 3 à 2
     maxAgendas: 1,
     canSave: false,
     canExportPdf: true,
@@ -31,8 +32,8 @@ export const PLANS = {
     description: 'Pour les petites équipes',
     price: 0,
     color: 'blue',
-    maxMembers: 5,
-    maxAgendas: 1,
+    maxMembers: 5, // ✅ Reste à 5 (cas d'usage courant)
+    maxAgendas: 1, // ⬇️⬇️ GROS CHANGEMENT : 3 → 1
     canSave: true,
     canExportPdf: true,
     hasWatermark: 'small' as const,
@@ -42,12 +43,12 @@ export const PLANS = {
     features: [
       'Sauvegarde cloud',
       "Jusqu'à 5 membres par agenda",
-      '1 agenda sauvegardé',
+      '1 agenda sauvegardé', // ⬇️ Modifié
       'Export PDF',
       'Synchronisation multi-appareils',
     ],
     limitations: [
-      '1 seul agenda (supprimer pour créer un nouveau)',
+      '1 seul agenda (supprimer pour créer un nouveau)', // ⬇️ Ajouté
       'Petite signature Planningo sur les PDF',
       'Pas de thèmes personnalisés',
       'Support communautaire uniquement',
@@ -57,7 +58,7 @@ export const PLANS = {
     id: 'pro',
     name: 'Pro',
     description: 'Pour les équipes professionnelles',
-    price: 9.99,
+    price: 5, // ⬇️ Changé de 9.99 à 5
     color: 'gold',
     maxMembers: null, // Illimité
     maxAgendas: null, // Illimité
@@ -160,7 +161,8 @@ export function getUpgradeMessage(currentPlan: PlanKey): {
 
   return {
     title: 'Passez en Pro',
-    description: 'Agendas illimités, membres illimités, PDF sans marque.',
+    description:
+      'Agendas illimités, membres illimités, PDF sans marque. Seulement 5€/mois.',
     cta: 'Passer en Pro',
     targetPlan: 'pro',
   }
