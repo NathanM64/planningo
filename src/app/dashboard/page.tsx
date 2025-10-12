@@ -10,6 +10,7 @@ import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button } from '@/components/ui'
 import CheckoutButton from '@/components/CheckoutButton'
+import PlanBadge from '@/components/PlanBadge'
 import {
   Calendar,
   Plus,
@@ -173,11 +174,10 @@ export default function DashboardPage() {
             </Link>
 
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg border border-blue-200">
-                <span className="text-sm font-semibold text-blue-900">
-                  {planName}
-                </span>
-              </div>
+              <PlanBadge
+                showUpgrade
+                onUpgradeClick={() => router.push('/pricing')}
+              />
               <Button variant="ghost" onClick={signOut} size="sm">
                 Déconnexion
               </Button>
@@ -239,15 +239,15 @@ export default function DashboardPage() {
             <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
           </div>
         ) : agendas.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-8 h-8 text-gray-400" />
+          <div className="bg-white rounded-lg border-2 border-gray-200 p-12 text-center">
+            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-8 h-8 text-blue-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
               Aucun agenda pour le moment
             </h3>
             <p className="text-gray-600 mb-6">
-              Créez votre premier agenda pour commencer
+              Créez votre premier agenda pour commencer à planifier
             </p>
             <Button
               onClick={handleCreateNew}
@@ -261,103 +261,96 @@ export default function DashboardPage() {
             {agendas.map((agenda) => (
               <div
                 key={agenda.id}
-                className="bg-white rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-all hover:shadow-lg group"
+                className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden hover:border-blue-400 hover:shadow-lg transition group"
               >
                 <div className="p-6">
-                  {/* Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-gray-900 line-clamp-1">
-                          {agenda.name}
-                        </h3>
-                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                          <Clock className="w-3 h-3" />
-                          {formatTime(agenda.updated_at)}
-                        </p>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition">
+                        {agenda.name}
+                      </h3>
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{formatTime(agenda.updated_at)}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Membres */}
                   {agenda.members && agenda.members.length > 0 && (
-                    <div className="mb-4 flex items-center gap-2 flex-wrap">
-                      {agenda.members.slice(0, 4).map((member) => (
-                        <div
-                          key={member.id}
-                          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            backgroundColor: `${member.color}15`,
-                            color: member.color,
-                            border: `1px solid ${member.color}40`,
-                          }}
-                        >
+                    <div className="mb-4">
+                      <p className="text-xs text-gray-500 mb-2">
+                        {agenda.members.length} membre
+                        {agenda.members.length > 1 ? 's' : ''}
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {agenda.members.slice(0, 3).map((member) => (
                           <div
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: member.color }}
-                          />
-                          {member.name}
-                        </div>
-                      ))}
-                      {agenda.members.length > 4 && (
-                        <span className="text-xs text-gray-500">
-                          +{agenda.members.length - 4}
-                        </span>
-                      )}
+                            key={member.id}
+                            className="px-2 py-1 rounded text-xs font-medium"
+                            style={{
+                              backgroundColor: member.color + '20',
+                              color: member.color,
+                              borderLeft: `2px solid ${member.color}`,
+                            }}
+                          >
+                            {member.name}
+                          </div>
+                        ))}
+                        {agenda.members.length > 3 && (
+                          <div className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                            +{agenda.members.length - 3}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
                   {/* Actions */}
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => handleOpenAgenda(agenda.id)}
-                      variant="primary"
                       size="sm"
+                      onClick={() => handleOpenAgenda(agenda.id)}
                       className="flex-1"
                     >
                       Ouvrir
                     </Button>
                     <Button
-                      onClick={() => handleDeleteAgenda(agenda.id)}
-                      variant="ghost"
                       size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteAgenda(agenda.id)}
                       disabled={deletingId === agenda.id}
-                      className="text-red-600 hover:bg-red-50"
+                      leftIcon={
+                        deletingId === agenda.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )
+                      }
                     >
-                      {deletingId === agenda.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
+                      {deletingId === agenda.id
+                        ? 'Suppression...'
+                        : 'Supprimer'}
                     </Button>
                   </div>
-                </div>
-
-                {/* Footer metadata */}
-                <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">
-                    Créé le {formatDate(agenda.created_at)}
-                  </p>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Avertissement limite atteinte */}
-        {plan === 'free' && agendas.length >= 1 && (
-          <div className="mt-8 bg-yellow-50 border-2 border-yellow-200 rounded-lg p-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+        {/* Message limite atteinte */}
+        {!isLoading && agendas.length >= (limits.maxAgendas || Infinity) && (
+          <div className="mt-6 bg-yellow-50 border-2 border-yellow-200 rounded-lg p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-yellow-600" />
+              </div>
               <div className="flex-1">
-                <h4 className="font-bold text-yellow-900 mb-1">
-                  Limite atteinte
-                </h4>
-                <p className="text-sm text-yellow-800 mb-4">
-                  Vous avez atteint votre limite de {limits.maxAgendas} agenda.
+                <h3 className="font-bold text-gray-900 mb-2">
+                  Limite d'agendas atteinte
+                </h3>
+                <p className="text-sm text-gray-700 mb-4">
                   Pour créer un nouveau planning, vous devez soit supprimer
                   l'existant, soit passer en plan Pro.
                 </p>
@@ -415,30 +408,22 @@ export default function DashboardPage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                  Support prioritaire
+                  Thèmes personnalisés
                 </li>
               </ul>
             </div>
 
-            <div className="text-center mb-6">
-              <div className="text-3xl font-bold text-gray-900 mb-1">
-                5€
-                <span className="text-lg text-gray-600 font-normal">/mois</span>
-              </div>
-              <p className="text-sm text-gray-600">Sans engagement</p>
-            </div>
-
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3">
+              <CheckoutButton className="w-full">
+                Passer en Pro - 5€/mois
+              </CheckoutButton>
               <Button
+                variant="ghost"
                 onClick={() => setShowUpgradeModal(false)}
-                variant="outline"
-                className="flex-1"
+                className="w-full"
               >
                 Plus tard
               </Button>
-              <CheckoutButton variant="primary" className="flex-1">
-                Passer en Pro
-              </CheckoutButton>
             </div>
           </div>
         </div>

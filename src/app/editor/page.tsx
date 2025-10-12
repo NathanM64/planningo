@@ -2,15 +2,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEditorStore } from '@/stores/editorStore'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { useTelemetry } from '@/hooks/useTelemetry'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { Button } from '@/components/ui'
-import { Printer, Save, LogOut, LogIn, Cloud } from 'lucide-react'
+import { Printer, Save, LogOut, LogIn, Cloud, Loader2 } from 'lucide-react'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
 import PrintableWeek from './components/PrintableWeek'
@@ -19,8 +19,16 @@ import PlanBadge from '@/components/PlanBadge'
 
 export default function EditorPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, signOut } = useAuth()
-  const { agenda, createNewAgenda, saveToCloud, isSaving } = useEditorStore()
+  const {
+    agenda,
+    createNewAgenda,
+    saveToCloud,
+    loadFromCloud,
+    isSaving,
+    isLoading,
+  } = useEditorStore()
   const { isTest, can, config } = usePlanLimits()
   const {
     trackAgendaCreate,
@@ -29,14 +37,30 @@ export default function EditorPage() {
     trackUpgradeClick,
   } = useTelemetry()
   const printRef = useRef<HTMLDivElement>(null)
+  const [hasLoadedFromUrl, setHasLoadedFromUrl] = useState(false)
 
-  // Créer un agenda si aucun n'existe
+  // Charger l'agenda depuis l'URL si paramètre "load" présent
   useEffect(() => {
-    if (!agenda) {
+    const loadAgendaId = searchParams.get('load')
+
+    if (loadAgendaId && !hasLoadedFromUrl) {
+      console.log("📂 Chargement de l'agenda:", loadAgendaId)
+      loadFromCloud(loadAgendaId)
+      setHasLoadedFromUrl(true)
+    } else if (!loadAgendaId && !agenda && !hasLoadedFromUrl) {
+      // Créer un nouvel agenda seulement si aucun paramètre load et pas d'agenda
       createNewAgenda()
       trackAgendaCreate()
+      setHasLoadedFromUrl(true)
     }
-  }, [agenda, createNewAgenda, trackAgendaCreate])
+  }, [
+    searchParams,
+    agenda,
+    hasLoadedFromUrl,
+    createNewAgenda,
+    loadFromCloud,
+    trackAgendaCreate,
+  ])
 
   // ⚠️ Alerte de fermeture en mode test
   useEffect(() => {
@@ -88,108 +112,123 @@ export default function EditorPage() {
     router.push(isTest ? '/auth' : '/pricing')
   }
 
+  // Afficher un loader pendant le chargement
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Chargement de l'agenda...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!agenda) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Initialisation...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Bandeau mode test */}
-      <TestModeBanner />
+      {isTest && <TestModeBanner onUpgrade={() => router.push('/auth')} />}
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Logo + Plan Badge */}
+            {/* Logo + Titre */}
             <div className="flex items-center gap-4">
               <Link
                 href="/"
                 className="flex items-center gap-2 hover:opacity-80 transition"
               >
                 <div className="w-8 h-8 bg-[#0000EE] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">P</span>
+                  <span className="text-white font-bold text-sm">P</span>
                 </div>
-                <span className="font-bold text-xl text-gray-900 hidden sm:inline">
+                <span className="hidden sm:inline font-bold text-lg text-gray-900">
                   Planningo
                 </span>
               </Link>
 
-              {/* Nom de l'agenda éditable */}
-              {agenda && (
-                <input
-                  type="text"
-                  value={agenda.name}
-                  onChange={(e) =>
-                    useEditorStore.getState().updateAgendaName(e.target.value)
-                  }
-                  className="font-semibold text-gray-900 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 outline-none px-2 py-1 transition max-w-[200px] sm:max-w-xs"
-                  placeholder="Nom de l'agenda"
-                />
-              )}
+              <div className="h-6 w-px bg-gray-300 hidden sm:block" />
 
-              <PlanBadge showUpgrade onUpgradeClick={handleUpgrade} />
+              <input
+                type="text"
+                value={agenda.name}
+                onChange={(e) =>
+                  useEditorStore.setState({
+                    agenda: { ...agenda, name: e.target.value },
+                  })
+                }
+                className="font-semibold text-gray-900 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-600 focus:outline-none transition px-2 py-1 w-40 sm:w-auto"
+                placeholder="Nom de l'agenda"
+              />
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
-              {/* Email utilisateur (si connecté) */}
-              {user && (
-                <span className="text-sm text-gray-600 hidden sm:block">
-                  {user.email}
-                </span>
+            <div className="flex items-center gap-2">
+              {/* Lien Dashboard (si connecté et pas en mode test) */}
+              {!isTest && user && (
+                <Link href="/dashboard">
+                  <Button size="sm" variant="ghost" className="hidden sm:flex">
+                    Mes agendas
+                  </Button>
+                </Link>
               )}
 
-              {/* Bouton Mes agendas (si connecté et peut sauvegarder) */}
-              {user && can('canSave') && (
-                <Button
-                  variant="ghost"
-                  onClick={() => router.push('/dashboard')}
-                >
-                  <span className="hidden sm:inline">Mes agendas</span>
-                  <span className="sm:hidden">Agendas</span>
-                </Button>
-              )}
+              {/* Badge plan */}
+              <PlanBadge onClick={handleUpgrade} />
 
-              {/* Bouton Sauvegarder / Se connecter */}
+              {/* Bouton Imprimer */}
               <Button
-                variant={isTest ? 'primary' : 'ghost'}
+                size="sm"
+                variant="outline"
+                onClick={handlePrint}
+                leftIcon={<Printer className="w-4 h-4" />}
+                className="hidden sm:flex"
+              >
+                Imprimer
+              </Button>
+
+              {/* Bouton Enregistrer / Se connecter */}
+              <Button
+                size="sm"
                 onClick={handleSaveOrAuth}
-                disabled={!agenda || (!isTest && isSaving) || !can('canSave')}
-                leftIcon={isSaving ? undefined : <Save className="w-4 h-4" />}
+                disabled={isSaving}
+                leftIcon={
+                  isSaving ? (
+                    <Cloud className="w-4 h-4 animate-pulse" />
+                  ) : isTest ? (
+                    <LogIn className="w-4 h-4" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )
+                }
               >
                 {isSaving
-                  ? 'Enregistrement...'
+                  ? 'Sauvegarde...'
                   : isTest
-                  ? 'Sauvegarder dans le cloud'
+                  ? 'Se connecter'
                   : 'Enregistrer'}
               </Button>
 
-              {/* Bouton Export PDF */}
-              <Button
-                variant="primary"
-                onClick={handlePrint}
-                leftIcon={<Printer className="w-4 h-4" />}
-                disabled={
-                  !agenda || agenda.members.length === 0 || !can('canExportPdf')
-                }
-              >
-                <span className="hidden sm:inline">Exporter PDF</span>
-                <span className="sm:hidden">PDF</span>
-              </Button>
-
-              {/* Bouton Connexion / Déconnexion */}
-              {user ? (
+              {/* Déconnexion (si connecté) */}
+              {!isTest && user && (
                 <Button
-                  variant="outline"
+                  size="sm"
+                  variant="ghost"
                   onClick={handleSignOut}
                   leftIcon={<LogOut className="w-4 h-4" />}
+                  className="hidden sm:flex"
                 >
-                  <span className="hidden sm:inline">Déconnexion</span>
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/auth')}
-                  leftIcon={<LogIn className="w-4 h-4" />}
-                >
-                  <span className="hidden sm:inline">Connexion</span>
+                  Déconnexion
                 </Button>
               )}
             </div>
@@ -197,31 +236,31 @@ export default function EditorPage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
-          {/* Sidebar gauche */}
-          <div className="space-y-6">
+      {/* Contenu principal */}
+      <div className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
+        <div className="grid lg:grid-cols-[250px_1fr] gap-6">
+          {/* Sidebar - Liste des membres */}
+          <aside className="lg:sticky lg:top-24 lg:self-start">
             <MemberList />
-          </div>
+          </aside>
 
-          {/* Canvas principal */}
-          <div>
+          {/* Main - Grille hebdomadaire */}
+          <main>
             <WeekGrid />
-          </div>
+          </main>
         </div>
+      </div>
 
-        {/* Composant caché pour l'impression */}
-        <div className="hidden">
-          {agenda && (
-            <PrintableWeek
-              ref={printRef}
-              agenda={agenda}
-              watermark={config.hasWatermark}
-            />
-          )}
-        </div>
-      </main>
+      {/* Version imprimable (cachée) */}
+      <div className="hidden">
+        {agenda && (
+          <PrintableWeek
+            ref={printRef}
+            agenda={agenda}
+            watermark={config.hasWatermark}
+          />
+        )}
+      </div>
     </div>
   )
 }

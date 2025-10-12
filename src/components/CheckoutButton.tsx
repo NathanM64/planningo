@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
 import { Crown, Loader2, AlertCircle } from 'lucide-react'
-import { getStripe } from '@/lib/stripe'
+import { supabase } from '@/lib/supabaseClient'
 
 interface CheckoutButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent'
@@ -34,11 +34,21 @@ export default function CheckoutButton({
     setError(null)
 
     try {
-      // Appeler l'API pour créer une session Stripe
+      // Récupérer la session active pour obtenir le token
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('Session expirée, veuillez vous reconnecter')
+      }
+
+      // Appeler l'API pour créer une session Stripe avec le token
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
         },
       })
 
@@ -50,18 +60,11 @@ export default function CheckoutButton({
         )
       }
 
-      // Rediriger vers Stripe Checkout
-      const stripe = await getStripe()
-      if (!stripe) {
-        throw new Error('Stripe non chargé')
-      }
-
-      const { error: stripeError } = await stripe.redirectToCheckout({
-        sessionId: data.sessionId,
-      })
-
-      if (stripeError) {
-        throw new Error(stripeError.message)
+      // Rediriger directement vers l'URL Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error('URL de paiement manquante')
       }
     } catch (err) {
       console.error('Erreur checkout:', err)

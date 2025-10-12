@@ -1,41 +1,41 @@
 // src/app/api/create-checkout/route.ts
+// Alternative avec token dans le header
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, getSuccessUrl, getCancelUrl } from '@/lib/stripe-server'
 import { STRIPE_PRICE_ID } from '@/lib/stripe'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
   try {
-    // Créer le client Supabase côté serveur
-    const cookieStore = await cookies()
+    // Récupérer le token d'auth depuis le header
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
 
-    const supabase = createServerClient(
+    if (!token) {
+      return NextResponse.json({ error: 'Token manquant' }, { status: 401 })
+    }
+
+    // Créer un client Supabase avec le token
+    const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          },
-        },
-      }
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    // Récupérer l'utilisateur connecté
+    // Vérifier l'utilisateur avec le token
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser(token)
 
     if (userError || !user) {
-      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+      console.error('❌ Auth failed:', userError)
+      return NextResponse.json(
+        { error: 'Non authentifié', details: userError?.message },
+        { status: 401 }
+      )
     }
+
+    console.log('✅ User authenticated:', user.id)
 
     // Créer une session de paiement Stripe
     const session = await stripe.checkout.sessions.create({
@@ -59,11 +59,16 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    console.log('✅ Stripe session created:', session.id)
+
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error) {
-    console.error('Erreur création session Stripe:', error)
+    console.error('❌ Erreur création session Stripe:', error)
     return NextResponse.json(
-      { error: 'Erreur lors de la création de la session' },
+      {
+        error: 'Erreur lors de la création de la session',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     )
   }

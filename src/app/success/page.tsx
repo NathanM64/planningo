@@ -2,11 +2,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui'
 import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SuccessPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
