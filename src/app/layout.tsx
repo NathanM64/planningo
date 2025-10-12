@@ -1,5 +1,7 @@
+// src/app/layout.tsx
 import type { Metadata } from 'next'
 import './globals.css'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 export const metadata: Metadata = {
   title: 'Planningo - Créez des agendas imprimables',
@@ -14,7 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className="antialiased bg-white text-gray-900">{children}</body>
+      <body className="antialiased bg-white text-gray-900">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   )
 }
