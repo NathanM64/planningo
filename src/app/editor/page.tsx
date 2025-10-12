@@ -1,3 +1,4 @@
+// src/app/editor/page.tsx
 'use client'
 
 import Link from 'next/link'
@@ -20,7 +21,7 @@ export default function EditorPage() {
   const router = useRouter()
   const { user, signOut } = useAuth()
   const { agenda, createNewAgenda, saveToCloud, isSaving } = useEditorStore()
-  const { isTest, can } = usePlanLimits()
+  const { isTest, can, config } = usePlanLimits()
   const {
     trackAgendaCreate,
     trackAgendaSave,
@@ -187,7 +188,13 @@ export default function EditorPage() {
 
         {/* Composant caché pour l'impression */}
         <div className="hidden">
-          {agenda && <PrintableWeek ref={printRef} agenda={agenda} />}
+          {agenda && (
+            <PrintableWeek
+              ref={printRef}
+              agenda={agenda}
+              watermark={config.hasWatermark}
+            />
+          )}
         </div>
       </main>
     </div>
