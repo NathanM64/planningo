@@ -11,7 +11,6 @@ import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button } from '@/components/ui'
 import CheckoutButton from '@/components/CheckoutButton'
-import PlanBadge from '@/components/PlanBadge'
 import {
   Calendar,
   Plus,
@@ -32,8 +31,8 @@ interface AgendaItem {
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, signOut, loading: authLoading } = useAuth()
-  const { plan, planName, limits, canAddAgenda, config } = usePlanLimits()
+  const { user, loading: authLoading } = useAuth()
+  const { plan, limits, canAddAgenda } = usePlanLimits()
   const createNewAgenda = useEditorStore((state) => state.createNewAgenda)
 
   const [agendas, setAgendas] = useState<AgendaItem[]>([])

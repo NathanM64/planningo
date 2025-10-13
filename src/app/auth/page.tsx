@@ -38,7 +38,7 @@ export default function AuthPage() {
           router.push('/editor')
         }
       }
-    } catch (err) {
+    } catch {
       setError('Une erreur est survenue')
     } finally {
       setLoading(false)
