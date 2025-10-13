@@ -71,7 +71,7 @@ export function useStorage(plan: PlanKey) {
         return value
       }
     },
-    set: (key: string, value: any) => {
+    set: (key: string, value: unknown) => {
       storage.setItem(key, JSON.stringify(value))
     },
     remove: (key: string) => {

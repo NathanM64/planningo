@@ -57,8 +57,8 @@ export const PLANS = {
   pro: {
     id: 'pro',
     name: 'Pro',
-    description: 'Pour les équipes professionnelles',
-    price: 5, // ⬇️ Changé de 9.99 à 5
+    description: '7 jours gratuits puis 5€/mois',
+    price: 5, // Abonnement mensuel récurrent
     color: 'gold',
     maxMembers: null, // Illimité
     maxAgendas: null, // Illimité
@@ -162,8 +162,8 @@ export function getUpgradeMessage(currentPlan: PlanKey): {
   return {
     title: 'Passez en Pro',
     description:
-      'Agendas illimités, membres illimités, PDF sans marque. Seulement 5€/mois.',
-    cta: 'Passer en Pro',
+      'Agendas illimités, membres illimités, PDF sans marque. 7 jours gratuits puis 5€/mois.',
+    cta: 'Essayer 7 jours gratuits',
     targetPlan: 'pro',
   }
 }

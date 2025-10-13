@@ -3,6 +3,35 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import { Button } from '@/components/ui'
 import { Calendar, Printer, Users, ArrowRight, Sparkles } from 'lucide-react'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Planningo - Créez des agendas imprimables en quelques clics',
+  description:
+    'Outil simple pour créer et imprimer des plannings hebdomadaires. Gérez facilement les emplois du temps de votre équipe. Gratuit sans inscription.',
+  keywords: [
+    'planning',
+    'agenda',
+    'emploi du temps',
+    'planning équipe',
+    'planning hebdomadaire',
+    'planning imprimable',
+    'PDF planning',
+  ],
+  openGraph: {
+    title: 'Planningo - Créez des agendas imprimables en quelques clics',
+    description:
+      'Outil simple pour créer et imprimer des plannings hebdomadaires pour votre équipe.',
+    type: 'website',
+    url: 'https://planningo.app',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Planningo - Créez des agendas imprimables',
+    description:
+      'Outil simple pour créer et imprimer des plannings hebdomadaires.',
+  },
+}
 
 export default function Home() {
   return (
@@ -41,11 +70,11 @@ export default function Home() {
             </span>
           </div>
 
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Créez des agendas
             <br />
             imprimables en quelques clics
-          </h2>
+          </h1>
 
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             L'outil simple et efficace pour créer des plannings personnalisés

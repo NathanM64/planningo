@@ -202,6 +202,7 @@ export async function loadAllAgendas(userId?: string): Promise<{
     name: string
     created_at: string
     updated_at: string
+    members?: Array<{ id: string; name: string; color: string }>
   }>
   error?: string
 }> {
@@ -213,9 +214,22 @@ export async function loadAllAgendas(userId?: string): Promise<{
   }
 
   try {
+    // OPTIMISATION: Charger agendas ET membres en une seule requete (evite N+1)
     let query = supabase
       .from('agendas')
-      .select('id, name, created_at, updated_at')
+      .select(
+        `
+        id,
+        name,
+        created_at,
+        updated_at,
+        members (
+          id,
+          name,
+          color
+        )
+      `
+      )
 
     if (userId) {
       query = query.eq('user_id', userId)

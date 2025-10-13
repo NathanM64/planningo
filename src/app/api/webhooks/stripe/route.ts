@@ -4,6 +4,9 @@ import { stripe } from '@/lib/stripe-server'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
+// Prix attendu en cents (5€ = 500 cents)
+const EXPECTED_AMOUNT = 500
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
@@ -26,14 +29,12 @@ export async function POST(request: NextRequest) {
         process.env.STRIPE_WEBHOOK_SECRET!
       )
     } catch (error) {
-      console.error('❌ Webhook signature verification failed:', error)
+      console.error('Webhook signature verification failed:', error)
       return NextResponse.json(
         { error: 'Webhook signature verification failed' },
         { status: 400 }
       )
     }
-
-    console.log('✅ Webhook event received:', event.type)
 
     // Créer un client Supabase avec la Service Role Key (bypass RLS)
     const supabase = createClient(
@@ -47,27 +48,71 @@ export async function POST(request: NextRequest) {
       }
     )
 
+    // SECURITE: Verifier l'idempotence (eviter le rejouage des webhooks)
+    const { data: existingEvent } = await supabase
+      .from('stripe_events')
+      .select('id')
+      .eq('event_id', event.id)
+      .single()
+
+    if (existingEvent) {
+      return NextResponse.json({ received: true, skipped: 'already_processed' })
+    }
+
+    // Enregistrer l'event pour l'idempotence
+    await supabase.from('stripe_events').insert({
+      event_id: event.id,
+      event_type: event.type,
+      processed_at: new Date().toISOString(),
+    })
+
     // Gérer les événements Stripe
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.user_id
 
-        if (userId) {
-          // Mettre à jour l'utilisateur en Pro
-          const { error } = await supabase.from('users').upsert({
-            id: userId,
+        if (!userId) {
+          console.error('User ID manquant dans metadata')
+          break
+        }
+
+        // SECURITE: Verifier que l'utilisateur existe avant de le mettre a jour
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', userId)
+          .single()
+
+        if (!existingUser) {
+          console.error('Utilisateur inexistant:', userId)
+          break
+        }
+
+        // SECURITE: Verifier le montant paye (protection contre manipulation)
+        if (session.amount_total !== EXPECTED_AMOUNT) {
+          console.error(
+            'Montant incorrect:',
+            session.amount_total,
+            'attendu:',
+            EXPECTED_AMOUNT
+          )
+          break
+        }
+
+        // Mettre a jour l'utilisateur en Pro (UPDATE et non UPSERT)
+        const { error } = await supabase
+          .from('users')
+          .update({
             is_pro: true,
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             updated_at: new Date().toISOString(),
           })
+          .eq('id', userId)
 
-          if (error) {
-            console.error('❌ Erreur mise à jour utilisateur:', error)
-          } else {
-            console.log('✅ Utilisateur passé en Pro:', userId)
-          }
+        if (error) {
+          console.error('Erreur mise a jour utilisateur:', error)
         }
         break
       }
@@ -92,11 +137,6 @@ export async function POST(request: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', user.id)
-
-          console.log(
-            '✅ Abonnement annulé, utilisateur repasse en Free:',
-            user.id
-          )
         }
         break
       }
@@ -120,19 +160,18 @@ export async function POST(request: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', user.id)
-
-          console.log('✅ Abonnement mis à jour:', user.id, 'Pro:', isActive)
         }
         break
       }
 
       default:
-        console.log(`ℹ️  Event non géré: ${event.type}`)
+        // Event non gere, ignorer silencieusement
+        break
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('❌ Erreur webhook:', error)
+    console.error('Erreur webhook:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

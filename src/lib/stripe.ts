@@ -18,5 +18,5 @@ export const getStripe = () => {
   return stripePromise
 }
 
-// ID du prix Pro (depuis Stripe Dashboard)
-export const STRIPE_PRICE_ID = 'price_1SHRoP8XtxxMmdak1Cnv7Gop'
+// ID du prix Pro - PRODUCTION (depuis Stripe Dashboard)
+export const STRIPE_PRICE_ID = 'price_1SHtac4oSdyKF9IFc6OtssOm'

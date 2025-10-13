@@ -28,16 +28,14 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser(token)
 
     if (userError || !user) {
-      console.error('❌ Auth failed:', userError)
+      console.error('Auth failed:', userError)
       return NextResponse.json(
         { error: 'Non authentifié', details: userError?.message },
         { status: 401 }
       )
     }
 
-    console.log('✅ User authenticated:', user.id)
-
-    // Créer une session de paiement Stripe
+    // Créer une session de paiement Stripe avec essai gratuit de 7 jours
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       line_items: [
@@ -53,17 +51,16 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
       },
       subscription_data: {
+        trial_period_days: 7, // Essai gratuit de 7 jours
         metadata: {
           user_id: user.id,
         },
       },
     })
 
-    console.log('✅ Stripe session created:', session.id)
-
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error) {
-    console.error('❌ Erreur création session Stripe:', error)
+    console.error('Erreur creation session Stripe:', error)
     return NextResponse.json(
       {
         error: 'Erreur lors de la création de la session',

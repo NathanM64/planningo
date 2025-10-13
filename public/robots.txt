@@ -1,0 +1,12 @@
+# robots.txt pour Planningo
+# https://planningo.app
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /editor
+Disallow: /success
+
+# Sitemap
+Sitemap: https://planningo.app/sitemap.xml

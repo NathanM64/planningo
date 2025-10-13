@@ -56,24 +56,8 @@ export default function DashboardPage() {
       const result = await loadAllAgendas(user.id)
 
       if (result.success && result.data) {
-        const agendasWithMembers = await Promise.all(
-          result.data.map(async (agenda) => {
-            const { data: members } = await (
-              await import('@/lib/supabaseClient')
-            ).supabase
-              .from('members')
-              .select('id, name, color')
-              .eq('agenda_id', agenda.id)
-              .limit(5)
-
-            return {
-              ...agenda,
-              members: members || [],
-            }
-          })
-        )
-
-        setAgendas(agendasWithMembers)
+        // Les membres sont deja charges depuis loadAllAgendas (optimisation N+1)
+        setAgendas(result.data)
       } else {
         console.error('Erreur chargement agendas:', result.error)
       }
