@@ -137,7 +137,7 @@ export default function EditorPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Bandeau mode test */}
-      {isTest && <TestModeBanner onUpgrade={() => router.push('/auth')} />}
+      {isTest && <TestModeBanner />}
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
@@ -184,7 +184,7 @@ export default function EditorPage() {
               )}
 
               {/* Badge plan */}
-              <PlanBadge onClick={handleUpgrade} />
+              <PlanBadge showUpgrade={true} onUpgradeClick={handleUpgrade} />
 
               {/* Bouton Imprimer */}
               <Button

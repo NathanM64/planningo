@@ -16,8 +16,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     // Variantes - palette "Soft & Modern"
     const variantStyles = {
       default: 'border border-gray-200 shadow-sm',
+      primary: 'border border-blue-200 bg-blue-50',
+      accent: 'border border-yellow-200 bg-yellow-50',
+      success: 'border border-green-200 bg-green-50',
       bordered: 'border-2 border-gray-300',
-      flat: 'border border-gray-100 bg-gray-50',
     }
 
     // Padding

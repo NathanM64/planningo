@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Éditeur - Planningo',
   description: 'Créez et modifiez vos plannings hebdomadaires.',
