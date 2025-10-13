@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
@@ -40,35 +41,30 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
-  // Rediriger si mode test ET pas connecté (mais attendre que auth soit chargé)
   useEffect(() => {
     if (!authLoading && plan === 'test' && !user) {
       router.push('/editor')
     }
   }, [plan, user, router, authLoading])
 
-  // Charger les agendas
   useEffect(() => {
     const fetchAgendas = async () => {
       if (!user) return
 
       setIsLoading(true)
 
-      // Charger les agendas
       const result = await loadAllAgendas(user.id)
 
       if (result.success && result.data) {
-        // Pour chaque agenda, charger aussi les membres
         const agendasWithMembers = await Promise.all(
           result.data.map(async (agenda) => {
-            // Requête pour récupérer les membres
             const { data: members } = await (
               await import('@/lib/supabaseClient')
             ).supabase
               .from('members')
               .select('id, name, color')
               .eq('agenda_id', agenda.id)
-              .limit(5) // Limiter à 5 membres max pour l'affichage
+              .limit(5)
 
             return {
               ...agenda,
@@ -142,10 +138,9 @@ export default function DashboardPage() {
   }
 
   if (!authLoading && plan === 'test' && !user) {
-    return null // Redirigé vers /editor
+    return null
   }
 
-  // Loading state pendant chargement auth
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -159,36 +154,25 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 hover:opacity-80 transition"
-            >
-              <div className="w-8 h-8 bg-[#0000EE] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">P</span>
-              </div>
-              <span className="font-bold text-xl text-gray-900">Planningo</span>
-            </Link>
-
-            <div className="flex items-center gap-3">
-              <PlanBadge
-                showUpgrade
-                onUpgradeClick={() => router.push('/pricing')}
-              />
-              <Button variant="ghost" onClick={signOut} size="sm">
-                Déconnexion
+      {/* Header unifié */}
+      <Header
+        customActions={
+          <>
+            <Link href="/editor">
+              <Button variant="ghost" size="sm">
+                Éditeur
               </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+            </Link>
+            <Button size="sm" onClick={handleCreateNew}>
+              <Plus className="w-4 h-4 mr-2" />
+              Nouveau
+            </Button>
+          </>
+        }
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Mes agendas</h1>
           <p className="text-gray-600">
@@ -196,7 +180,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Limite et CTA */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-600">
@@ -233,7 +216,6 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Liste des agendas */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
@@ -276,7 +258,6 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Membres */}
                   {agenda.members && agenda.members.length > 0 && (
                     <div className="mb-4">
                       <p className="text-xs text-gray-500 mb-2">
@@ -306,7 +287,6 @@ export default function DashboardPage() {
                     </div>
                   )}
 
-                  {/* Actions */}
                   <div className="flex gap-2">
                     <Button
                       size="sm"
@@ -339,7 +319,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Message limite atteinte */}
         {!isLoading && agendas.length >= (limits.maxAgendas || Infinity) && (
           <div className="mt-6 bg-yellow-50 border-2 border-yellow-200 rounded-lg p-6">
             <div className="flex items-start gap-4">

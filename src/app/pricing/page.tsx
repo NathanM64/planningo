@@ -3,6 +3,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { PLANS } from '@/config/plans'
@@ -45,48 +46,8 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 hover:opacity-80 transition"
-          >
-            <div className="w-8 h-8 bg-[#0000EE] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">P</span>
-            </div>
-            <span className="font-bold text-xl text-gray-900">Planningo</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            {user ? (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={() => router.push('/dashboard')}
-                >
-                  Mes agendas
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/editor')}
-                >
-                  Mon éditeur
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="ghost" onClick={() => router.push('/auth')}>
-                  Connexion
-                </Button>
-                <Button onClick={() => router.push('/auth')}>
-                  Créer un compte
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+      {/* Header unifié */}
+      <Header />
 
       {/* Hero */}
       <div className="bg-white border-b border-gray-200">
@@ -122,7 +83,6 @@ export default function PricingPage() {
                     : 'border-gray-200'
                 }`}
               >
-                {/* Badge */}
                 {highlight && (
                   <div className="bg-yellow-400 text-center py-2 px-4">
                     <span className="text-sm font-bold text-gray-900">
@@ -138,7 +98,6 @@ export default function PricingPage() {
                   </div>
                 )}
 
-                {/* Header */}
                 <div className="p-8">
                   <div className="flex items-center gap-3 mb-4">
                     <div
@@ -170,7 +129,6 @@ export default function PricingPage() {
                     </div>
                   </div>
 
-                  {/* Prix */}
                   <div className="mb-6">
                     {plan.price === 0 ? (
                       <div className="text-4xl font-bold text-gray-900">
@@ -186,7 +144,6 @@ export default function PricingPage() {
                     )}
                   </div>
 
-                  {/* CTA */}
                   {key === 'pro' ? (
                     <CheckoutButton
                       variant={highlight ? 'primary' : 'secondary'}
@@ -220,7 +177,6 @@ export default function PricingPage() {
                     </Button>
                   )}
 
-                  {/* Features */}
                   <div className="space-y-3">
                     {plan.features.map((feature, index) => (
                       <div key={index} className="flex items-start gap-2">
@@ -230,7 +186,6 @@ export default function PricingPage() {
                     ))}
                   </div>
 
-                  {/* Limitations */}
                   {plan.limitations.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 mb-2">

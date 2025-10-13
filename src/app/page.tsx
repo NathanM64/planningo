@@ -1,24 +1,16 @@
 // src/app/page.tsx
 import Link from 'next/link'
+import Header from '@/components/Header'
 import { Button } from '@/components/ui'
 import { Calendar, Printer, Users, ArrowRight, Sparkles } from 'lucide-react'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-16">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-20">
-          <Link
-            href="/"
-            className="flex items-center gap-2 hover:opacity-80 transition"
-          >
-            <div className="w-10 h-10 bg-[#0000EE] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">P</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Planningo</h1>
-          </Link>
-
+      {/* Header unifié */}
+      <Header
+        showPlanBadge={false}
+        customActions={
           <nav className="hidden md:flex items-center gap-6">
             <a
               href="#features"
@@ -32,25 +24,14 @@ export default function Home() {
             >
               Tarifs
             </Link>
-            <Link
-              href="/dashboard"
-              className="text-gray-600 hover:text-gray-900 transition"
-            >
-              Mes agendas
-            </Link>
             <Link href="/editor">
               <Button size="sm">Commencer</Button>
             </Link>
           </nav>
+        }
+      />
 
-          {/* Mobile menu */}
-          <div className="md:hidden">
-            <Link href="/editor">
-              <Button size="sm">Commencer</Button>
-            </Link>
-          </div>
-        </header>
-
+      <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center mb-20">
           <div className="inline-block mb-6 px-4 py-2 bg-blue-50 rounded-full border border-blue-200">
@@ -161,40 +142,49 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-[#0000EE] rounded-lg p-12 text-center max-w-4xl mx-auto">
-          <h3 className="text-3xl font-bold text-white mb-4">
+        <div className="max-w-4xl mx-auto bg-[#0000EE] rounded-2xl p-12 text-center text-white">
+          <h3 className="text-3xl font-bold mb-4">
             Prêt à simplifier vos plannings ?
           </h3>
-          <p className="text-blue-100 text-lg mb-8">
-            Commencez gratuitement, aucune carte bancaire requise.
+          <p className="text-lg mb-8 text-blue-100">
+            Commencez gratuitement, aucune inscription requise.
           </p>
           <Link href="/editor">
             <Button
               size="lg"
-              variant="secondary"
-              rightIcon={<ArrowRight className="w-5 h-5" />}
+              variant="outline"
+              className="bg-white text-[#0000EE] hover:bg-gray-100"
             >
               Créer mon premier agenda
             </Button>
           </Link>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-20 pt-8 border-t border-gray-200 text-center text-gray-600">
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-4">
-            <Link href="/pricing" className="hover:text-gray-900 transition">
-              Tarifs
-            </Link>
-            <Link href="/editor" className="hover:text-gray-900 transition">
-              Éditeur
-            </Link>
-            <Link href="/auth" className="hover:text-gray-900 transition">
-              Connexion
-            </Link>
-          </div>
-          <p>© 2025 Planningo. Fait pour simplifier vos plannings.</p>
-        </footer>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 mt-20">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-600 text-sm">
+              © 2025 Planningo. Tous droits réservés.
+            </p>
+            <div className="flex gap-6">
+              <Link
+                href="/pricing"
+                className="text-gray-600 hover:text-gray-900 text-sm transition"
+              >
+                Tarifs
+              </Link>
+              <a
+                href="mailto:marimbordes.nathan@gmail.com"
+                className="text-gray-600 hover:text-gray-900 text-sm transition"
+              >
+                Contact
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }
