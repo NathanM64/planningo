@@ -62,11 +62,11 @@ export function useStorage(plan: PlanKey) {
   const storage = getStorage(plan)
 
   return {
-    get: (key: string) => {
+    get: (key: string): unknown => {
       const value = storage.getItem(key)
       if (!value) return null
       try {
-        return JSON.parse(value)
+        return JSON.parse(value) as unknown
       } catch {
         return value
       }
