@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button, Input } from '@/components/ui'
 import Link from 'next/link'
@@ -47,9 +46,6 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header unifié */}
-      <Header />
-
       <div className="flex items-center justify-center p-4 py-16">
         <div className="w-full max-w-md">
           {/* Logo - Supprimé car déjà dans le header */}

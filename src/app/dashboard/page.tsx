@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import FocusTrap from 'focus-trap-react'
-import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
@@ -158,9 +157,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header unifié */}
-      <Header />
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

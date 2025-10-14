@@ -9,7 +9,7 @@ import { useTelemetry } from '@/hooks/useTelemetry'
 import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { Loader2 } from 'lucide-react'
-import Header from '@/components/Header'
+import EditorToolbar from './components/EditorToolbar'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
 import PrintableWeek from './components/PrintableWeek'
@@ -61,12 +61,12 @@ export default function EditorPage() {
     trackAgendaCreate,
   ])
 
-  // ⚠️ Alerte de fermeture en mode test
+  // Alerte de fermeture en mode test
   useEffect(() => {
     if (isTest && agenda && agenda.members.length > 0) {
       const handleBeforeUnload = (e: BeforeUnloadEvent) => {
         e.preventDefault()
-        return '⚠️ Vos modifications seront perdues ! Créez un compte gratuit pour sauvegarder.'
+        return 'Vos modifications seront perdues ! Créez un compte gratuit pour sauvegarder.'
       }
       window.addEventListener('beforeunload', handleBeforeUnload)
       return () =>
@@ -138,8 +138,8 @@ export default function EditorPage() {
       {/* Bandeau mode test */}
       {isTest && <TestModeBanner />}
 
-      {/* Header */}
-      <Header
+      {/* Toolbar (actions de l'éditeur) */}
+      <EditorToolbar
         agendaName={agenda.name}
         onAgendaNameChange={(name) =>
           useEditorStore.setState({
@@ -152,7 +152,7 @@ export default function EditorPage() {
       />
 
       {/* Contenu principal */}
-      <div className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
+      <div className="flex-1 container mx-auto px-4 pb-6 max-w-7xl">
         <div className="grid lg:grid-cols-[250px_1fr] gap-6">
           {/* Sidebar - Liste des membres */}
           <aside className="lg:sticky lg:top-24 lg:self-start">

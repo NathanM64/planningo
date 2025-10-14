@@ -3,7 +3,6 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { PLANS } from '@/config/plans'
@@ -81,8 +80,6 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Header unifié */}
-      <Header />
 
       {/* Hero */}
       <div className="bg-white border-b border-gray-200">

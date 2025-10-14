@@ -6,7 +6,7 @@ export interface Member {
   color: string
 }
 
-// ⚠️ CHANGEMENT : memberId devient memberIds (array)
+// CHANGEMENT : memberId devient memberIds (array)
 export interface AgendaBlock {
   id: string
   memberIds: string[] // 🆕 Tableau de IDs au lieu d'un seul

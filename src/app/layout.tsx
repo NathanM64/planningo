@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { GlobalToast } from '@/components/ui/GlobalToast'
+import Header from '@/components/Header'
 
 export const metadata: Metadata = {
   title: 'Planningo - Créez des agendas imprimables',
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="fr">
       <body className="antialiased bg-white text-gray-900">
         <AuthProvider>
+          <Header />
           {children}
           <GlobalToast />
         </AuthProvider>

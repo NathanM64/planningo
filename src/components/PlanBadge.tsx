@@ -1,18 +1,11 @@
 // src/components/PlanBadge.tsx
 'use client'
 
+import Link from 'next/link'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
-import { Crown, Zap, TestTube } from 'lucide-react'
+import { Zap, TestTube, Crown } from 'lucide-react'
 
-interface PlanBadgeProps {
-  showUpgrade?: boolean
-  onUpgradeClick?: () => void
-}
-
-export default function PlanBadge({
-  showUpgrade = false,
-  onUpgradeClick,
-}: PlanBadgeProps) {
+export default function PlanBadge() {
   const { plan, planName, colors } = usePlanLimits()
 
   const icons = {
@@ -23,25 +16,30 @@ export default function PlanBadge({
 
   const Icon = icons[plan]
 
-  return (
-    <div className="flex items-center gap-2">
+  // Si Pro, badge non cliquable (juste un indicateur de statut)
+  if (plan === 'pro') {
+    return (
       <div
-        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border-2 ${colors.bg} ${colors.border}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border ${colors.bg} ${colors.border}`}
       >
         <Icon className={`w-3.5 h-3.5 ${colors.text}`} />
-        <span className={`text-sm font-semibold ${colors.text}`}>
-          {planName}
-        </span>
+        <span className={`text-xs font-semibold ${colors.text}`}>{planName}</span>
       </div>
+    )
+  }
 
-      {showUpgrade && plan !== 'pro' && (
-        <button
-          onClick={onUpgradeClick}
-          className="text-sm text-blue-600 hover:text-blue-700 font-semibold hover:underline"
-        >
-          Mettre à niveau
-        </button>
-      )}
-    </div>
+  // Pour Test/Free, badge cliquable pour upgrade
+  const upgradeLink = plan === 'test' ? '/auth' : '/pricing'
+  const upgradeLabel = plan === 'test' ? 'Créer un compte' : 'Passer Pro'
+
+  return (
+    <Link
+      href={upgradeLink}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border ${colors.bg} ${colors.border} cursor-pointer hover:scale-105 transition-transform`}
+      title={upgradeLabel}
+    >
+      <Icon className={`w-3.5 h-3.5 ${colors.text}`} />
+      <span className={`text-xs font-semibold ${colors.text}`}>{planName}</span>
+    </Link>
   )
 }

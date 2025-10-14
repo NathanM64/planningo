@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabaseClient'
+import { createClient } from '@/lib/supabase/client'
 import {
   getUserPlan,
   PLANS,
@@ -35,6 +35,8 @@ export function usePlanLimits() {
         return
       }
 
+      const supabase = createClient()
+
       try {
         const { data, error } = await supabase
           .from('users')
@@ -43,12 +45,9 @@ export function usePlanLimits() {
           .single()
 
         if (error) {
-          // Si l'utilisateur n'existe pas encore dans users, le créer
+          // Si l'utilisateur n'existe pas encore dans users, considérer comme non-Pro
+          // L'utilisateur sera créé automatiquement par le webhook Stripe ou lors du premier paiement
           if (error.code === 'PGRST116') {
-            await supabase.from('users').insert({
-              id: user.id,
-              is_pro: false,
-            })
             setIsPro(false)
           } else {
             console.error('Erreur chargement statut Pro:', error)

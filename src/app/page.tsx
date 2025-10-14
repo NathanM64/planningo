@@ -1,6 +1,5 @@
 // src/app/page.tsx
 import Link from 'next/link'
-import Header from '@/components/Header'
 import { Button } from '@/components/ui'
 import { Calendar, Printer, Users, ArrowRight, Sparkles } from 'lucide-react'
 import { Metadata } from 'next'
@@ -63,8 +62,6 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Header unifié */}
-      <Header />
 
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}

@@ -77,18 +77,6 @@ export async function POST(request: NextRequest) {
           break
         }
 
-        // SECURITE: Verifier que l'utilisateur existe avant de le mettre a jour
-        const { data: existingUser } = await supabase
-          .from('users')
-          .select('id')
-          .eq('id', userId)
-          .single()
-
-        if (!existingUser) {
-          console.error('Utilisateur inexistant:', userId)
-          break
-        }
-
         // SECURITE: Verifier le montant paye (protection contre manipulation)
         // Accepter 0€ (essai gratuit 7 jours) ou 500 cents (5€)
         const isValidAmount =
@@ -106,16 +94,18 @@ export async function POST(request: NextRequest) {
           break
         }
 
-        // Mettre a jour l'utilisateur en Pro (UPDATE et non UPSERT)
+        // Utiliser UPSERT pour créer ou mettre à jour l'utilisateur
         const { error } = await supabase
           .from('users')
-          .update({
+          .upsert({
+            id: userId,
             is_pro: true,
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'id'
           })
-          .eq('id', userId)
 
         if (error) {
           console.error('Erreur mise a jour utilisateur:', error)
