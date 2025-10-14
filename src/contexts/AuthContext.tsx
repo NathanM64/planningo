@@ -79,8 +79,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Nettoyer immédiatement le state local
     setUser(null)
     setSession(null)
+
     // Appeler Supabase signOut
     await supabase.auth.signOut()
+
+    // Forcer la suppression du localStorage Supabase
+    // (au cas où signOut() ne le ferait pas correctement)
+    if (typeof window !== 'undefined') {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      if (supabaseUrl) {
+        const projectRef = new URL(supabaseUrl).hostname.split('.')[0]
+        const storageKey = `sb-${projectRef}-auth-token`
+        localStorage.removeItem(storageKey)
+      }
+    }
+
     // Rediriger après un court délai pour s'assurer que tout est nettoyé
     setTimeout(() => {
       window.location.href = '/'
