@@ -72,38 +72,22 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.user_id
 
-        console.log('🎯 Webhook checkout.session.completed:', {
-          userId,
-          amount: session.amount_total,
-          customer: session.customer,
-          subscription: session.subscription,
-        })
-
         if (!userId) {
-          console.error('❌ User ID manquant dans metadata')
+          console.error('User ID manquant dans metadata')
           break
         }
 
         // SECURITE: Verifier que l'utilisateur existe avant de le mettre a jour
-        const { data: existingUser, error: userFetchError } = await supabase
+        const { data: existingUser } = await supabase
           .from('users')
           .select('id')
           .eq('id', userId)
           .single()
 
-        console.log('🔍 Recherche utilisateur:', {
-          userId,
-          found: !!existingUser,
-          error: userFetchError,
-          hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-        })
-
         if (!existingUser) {
-          console.error('❌ Utilisateur inexistant:', userId, userFetchError)
+          console.error('Utilisateur inexistant:', userId)
           break
         }
-
-        console.log('✅ Utilisateur trouvé:', existingUser.id)
 
         // SECURITE: Verifier le montant paye (protection contre manipulation)
         // Accepter 0€ (essai gratuit 7 jours) ou 500 cents (5€)
@@ -113,7 +97,7 @@ export async function POST(request: NextRequest) {
 
         if (!isValidAmount) {
           console.error(
-            '❌ Montant incorrect:',
+            'Montant incorrect:',
             session.amount_total,
             'attendu: 0 (essai) ou',
             EXPECTED_AMOUNT,
@@ -122,10 +106,8 @@ export async function POST(request: NextRequest) {
           break
         }
 
-        console.log('✅ Montant valide:', session.amount_total)
-
         // Mettre a jour l'utilisateur en Pro (UPDATE et non UPSERT)
-        const { data: updatedUser, error } = await supabase
+        const { error } = await supabase
           .from('users')
           .update({
             is_pro: true,
@@ -134,12 +116,9 @@ export async function POST(request: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', userId)
-          .select()
 
         if (error) {
-          console.error('❌ Erreur mise a jour utilisateur:', error)
-        } else {
-          console.log('✅ Utilisateur mis à jour en Pro:', updatedUser)
+          console.error('Erreur mise a jour utilisateur:', error)
         }
         break
       }
