@@ -55,7 +55,7 @@ export default function UserAvatar() {
   const handleSignOut = async () => {
     setIsOpen(false)
     await signOut()
-    router.push('/')
+    // Pas besoin de router.push car signOut() redirige déjà
   }
 
   return (
