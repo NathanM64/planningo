@@ -38,7 +38,8 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Routes protégées nécessitant une authentification
-  const protectedRoutes = ['/dashboard', '/editor', '/success']
+  // Note: /editor est accessible en mode test (sans auth)
+  const protectedRoutes = ['/dashboard', '/success']
 
   // Vérifier si la route actuelle est protégée
   const isProtectedRoute = protectedRoutes.some((route) =>
