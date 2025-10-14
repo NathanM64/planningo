@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo, useCallback } from 'react'
+import { useState, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
@@ -25,7 +25,6 @@ function MemberList() {
     upgradeMessage,
     colors,
     isTest,
-    isFree,
   } = usePlanLimits()
   const { trackMemberAdd, trackLimitReached, trackUpgradeClick } =
     useTelemetry()

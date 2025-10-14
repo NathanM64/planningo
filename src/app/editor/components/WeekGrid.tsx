@@ -11,8 +11,6 @@ import { Button } from '@/components/ui'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 import BlockModal from './BlockModal'
 
-const HOURS = Array.from({ length: 11 }, (_, i) => i + 8)
-
 function WeekGrid() {
   const { agenda, goToPreviousWeek, goToNextWeek, goToToday } = useEditorStore()
 
@@ -20,6 +18,14 @@ function WeekGrid() {
   const [modalMemberId, setModalMemberId] = useState<string | undefined>()
   const [modalDate, setModalDate] = useState<string | undefined>()
   const [blockToEdit, setBlockToEdit] = useState<AgendaBlock | null>(null)
+
+  // Memoize calculations to avoid recalculating on every render
+  // MUST be before any conditional returns to follow React Hooks rules
+  const weekDays = useMemo(
+    () => agenda ? getWeekDays(agenda.currentWeekStart) : [],
+    [agenda?.currentWeekStart]
+  )
+  const today = useMemo(() => formatDateISO(new Date()), [])
 
   const handleCreateBlock = (memberId: string, date: string) => {
     setModalMemberId(memberId)
@@ -44,13 +50,7 @@ function WeekGrid() {
 
   if (!agenda) return null
 
-  // Memoize calculations to avoid recalculating on every render
-  const weekDays = useMemo(
-    () => getWeekDays(agenda.currentWeekStart),
-    [agenda.currentWeekStart]
-  )
   const hasMembers = agenda.members.length > 0
-  const today = useMemo(() => formatDateISO(new Date()), [])
 
   return (
     <>

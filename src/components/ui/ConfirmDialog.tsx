@@ -86,7 +86,7 @@ export function ConfirmDialog({
             </Button>
             <Button
               ref={confirmButtonRef}
-              variant={variant === 'danger' ? 'destructive' : 'default'}
+              variant={variant === 'danger' ? 'danger' : 'primary'}
               onClick={() => {
                 onConfirm()
                 onCancel()
