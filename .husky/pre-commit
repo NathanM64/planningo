@@ -1,1 +1,2 @@
 yarn lint-staged
+echo "✓ Pre-commit check passed"

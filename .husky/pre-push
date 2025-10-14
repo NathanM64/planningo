@@ -1,0 +1,3 @@
+echo "Running build before push..."
+yarn build
+echo "✓ Build successful - ready to push"
