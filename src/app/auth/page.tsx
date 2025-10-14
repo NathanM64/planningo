@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button, Input } from '@/components/ui'
 import Link from 'next/link'
-import { LogIn, UserPlus, ArrowLeft } from 'lucide-react'
+import { LogIn, UserPlus } from 'lucide-react'
 
 export default function AuthPage() {
   const router = useRouter()
@@ -14,6 +14,8 @@ export default function AuthPage() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -26,7 +28,7 @@ export default function AuthPage() {
       const { error } =
         mode === 'signin'
           ? await signIn(email, password)
-          : await signUp(email, password)
+          : await signUp(email, password, firstName, lastName)
 
       if (error) {
         setError(error.message)
@@ -34,7 +36,7 @@ export default function AuthPage() {
         if (mode === 'signup') {
           setError('Vérifiez votre email pour confirmer votre inscription !')
         } else {
-          router.push('/editor')
+          router.push('/dashboard')
         }
       }
     } catch {
@@ -57,9 +59,32 @@ export default function AuthPage() {
             </p>
           </div>
 
-          {/* Formulaire - RESTE IDENTIQUE */}
+          {/* Formulaire */}
           <div className="bg-white rounded-lg border-2 border-gray-200 p-8">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {mode === 'signup' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    type="text"
+                    label="Prénom"
+                    placeholder="Jean"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    autoComplete="given-name"
+                  />
+                  <Input
+                    type="text"
+                    label="Nom"
+                    placeholder="Dupont"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    autoComplete="family-name"
+                  />
+                </div>
+              )}
+
               <Input
                 type="email"
                 label="Email"
@@ -117,21 +142,31 @@ export default function AuthPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-6 space-y-3 text-center text-sm">
               {mode === 'signin' ? (
-                <p className="text-gray-600">
-                  Pas encore de compte ?{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode('signup')
-                      setError('')
-                    }}
-                    className="text-[#0000EE] font-semibold hover:underline"
-                  >
-                    Créer un compte
-                  </button>
-                </p>
+                <>
+                  <p className="text-gray-600">
+                    Pas encore de compte ?{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('signup')
+                        setError('')
+                      }}
+                      className="text-[#0000EE] font-semibold hover:underline"
+                    >
+                      Créer un compte
+                    </button>
+                  </p>
+                  <p className="text-gray-600">
+                    <Link
+                      href="/auth/reset-password"
+                      className="text-[#0000EE] font-semibold hover:underline"
+                    >
+                      Mot de passe oublié ?
+                    </Link>
+                  </p>
+                </>
               ) : (
                 <p className="text-gray-600">
                   Déjà un compte ?{' '}
