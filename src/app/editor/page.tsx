@@ -44,7 +44,6 @@ export default function EditorPage() {
     const loadAgendaId = searchParams.get('load')
 
     if (loadAgendaId && !hasLoadedFromUrl && !isLoading) {
-      console.log("📂 Chargement de l'agenda:", loadAgendaId)
       loadFromCloud(loadAgendaId)
       setHasLoadedFromUrl(true)
     } else if (!loadAgendaId && !agenda && !hasLoadedFromUrl && !isLoading) {

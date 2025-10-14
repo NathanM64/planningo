@@ -258,15 +258,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           lastSaved: new Date().toISOString(),
           isSaving: false,
         })
-        console.log('✅ Agenda sauvegardé')
         toastService.success('Agenda sauvegardé avec succès')
       } else {
-        console.error('❌ Erreur:', result.error)
+        console.error('Erreur sauvegarde:', result.error)
         set({ isSaving: false })
         toastService.error(`Erreur: ${result.error}`)
       }
     } catch (error) {
-      console.error('❌ Erreur inattendue:', error)
+      console.error('Erreur sauvegarde inattendue:', error)
       set({ isSaving: false })
       toastService.error('Erreur de sauvegarde')
     }
@@ -285,14 +284,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           isLoading: false,
           lastSaved: result.data.updated_at || null,
         })
-        console.log('✅ Agenda chargé')
       } else {
-        console.error('❌ Erreur:', result.error)
+        console.error('Erreur chargement:', result.error)
         set({ isLoading: false })
         toastService.error(`Erreur: ${result.error}`)
       }
     } catch (error) {
-      console.error('❌ Erreur inattendue:', error)
+      console.error('Erreur chargement inattendue:', error)
       set({ isLoading: false })
       toastService.error('Erreur de chargement')
     }
@@ -303,18 +301,17 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       const result = await deleteAgenda(agendaId)
 
       if (result.success) {
-        console.log('✅ Agenda supprimé')
         const state = get()
         if (state.agenda?.id === agendaId) {
           state.createNewAgenda()
         }
         toastService.success('Agenda supprimé avec succès')
       } else {
-        console.error('❌ Erreur:', result.error)
+        console.error('Erreur suppression:', result.error)
         toastService.error(`Erreur: ${result.error}`)
       }
     } catch (error) {
-      console.error('❌ Erreur inattendue:', error)
+      console.error('Erreur suppression inattendue:', error)
       toastService.error('Erreur de suppression')
     }
   },
