@@ -85,14 +85,21 @@ export async function POST(request: NextRequest) {
         }
 
         // SECURITE: Verifier que l'utilisateur existe avant de le mettre a jour
-        const { data: existingUser } = await supabase
+        const { data: existingUser, error: userFetchError } = await supabase
           .from('users')
           .select('id')
           .eq('id', userId)
           .single()
 
+        console.log('🔍 Recherche utilisateur:', {
+          userId,
+          found: !!existingUser,
+          error: userFetchError,
+          hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        })
+
         if (!existingUser) {
-          console.error('❌ Utilisateur inexistant:', userId)
+          console.error('❌ Utilisateur inexistant:', userId, userFetchError)
           break
         }
 
