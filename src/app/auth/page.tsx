@@ -48,17 +48,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header unifié */}
-      <Header
-        showPlanBadge={false}
-        customActions={
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Retour
-            </Button>
-          </Link>
-        }
-      />
+      <Header />
 
       <div className="flex items-center justify-center p-4 py-16">
         <div className="w-full max-w-md">

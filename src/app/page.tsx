@@ -64,28 +64,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Header unifié */}
-      <Header
-        showPlanBadge={false}
-        customActions={
-          <nav className="hidden md:flex items-center gap-6">
-            <a
-              href="#features"
-              className="text-gray-600 hover:text-gray-900 transition"
-            >
-              Fonctionnalités
-            </a>
-            <Link
-              href="/pricing"
-              className="text-gray-600 hover:text-gray-900 transition"
-            >
-              Tarifs
-            </Link>
-            <Link href="/editor">
-              <Button size="sm">Commencer</Button>
-            </Link>
-          </nav>
-        }
-      />
+      <Header />
 
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}

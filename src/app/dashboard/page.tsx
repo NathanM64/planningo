@@ -159,21 +159,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header unifié */}
-      <Header
-        customActions={
-          <>
-            <Link href="/editor">
-              <Button variant="ghost" size="sm">
-                Éditeur
-              </Button>
-            </Link>
-            <Button size="sm" onClick={handleCreateNew}>
-              <Plus className="w-4 h-4 mr-2" />
-              Nouveau
-            </Button>
-          </>
-        }
-      />
+      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

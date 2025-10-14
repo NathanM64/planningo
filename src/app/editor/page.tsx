@@ -1,7 +1,6 @@
 // src/app/editor/page.tsx
 'use client'
 
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEditorStore } from '@/stores/editorStore'
@@ -9,13 +8,12 @@ import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { useTelemetry } from '@/hooks/useTelemetry'
 import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
-import { Button } from '@/components/ui'
-import { Printer, Save, LogOut, LogIn, Cloud, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import Header from '@/components/Header'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
 import PrintableWeek from './components/PrintableWeek'
 import TestModeBanner from './components/TestModeBanner'
-import PlanBadge from '@/components/PlanBadge'
 
 export default function EditorPage() {
   const router = useRouter()
@@ -141,105 +139,17 @@ export default function EditorPage() {
       {isTest && <TestModeBanner />}
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            {/* Logo + Titre */}
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="flex items-center gap-2 hover:opacity-80 transition"
-              >
-                <div className="w-8 h-8 bg-[#0000EE] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">P</span>
-                </div>
-                <span className="hidden sm:inline font-bold text-lg text-gray-900">
-                  Planningo
-                </span>
-              </Link>
-
-              <div className="h-6 w-px bg-gray-300 hidden sm:block" />
-
-              <label htmlFor="agenda-name" className="sr-only">
-                Nom de l'agenda
-              </label>
-              <input
-                id="agenda-name"
-                type="text"
-                value={agenda.name}
-                onChange={(e) =>
-                  useEditorStore.setState({
-                    agenda: { ...agenda, name: e.target.value },
-                  })
-                }
-                className="font-semibold text-gray-900 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-600 focus:outline-none transition px-2 py-1 w-40 sm:w-auto"
-                placeholder="Nom de l'agenda"
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              {/* Lien Dashboard (si connecté et pas en mode test) */}
-              {!isTest && user && (
-                <Link href="/dashboard">
-                  <Button size="sm" variant="ghost" className="hidden sm:flex">
-                    Mes agendas
-                  </Button>
-                </Link>
-              )}
-
-              {/* Badge plan */}
-              <PlanBadge showUpgrade={true} onUpgradeClick={handleUpgrade} />
-
-              {/* Bouton Imprimer */}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handlePrint}
-                leftIcon={<Printer className="w-4 h-4" />}
-                className="hidden sm:flex"
-              >
-                Imprimer
-              </Button>
-
-              {/* Bouton Enregistrer / Se connecter */}
-              <Button
-                size="sm"
-                onClick={handleSaveOrAuth}
-                disabled={isSaving}
-                leftIcon={
-                  isSaving ? (
-                    <Cloud className="w-4 h-4 animate-pulse" />
-                  ) : isTest ? (
-                    <LogIn className="w-4 h-4" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )
-                }
-              >
-                {isSaving
-                  ? 'Sauvegarde...'
-                  : isTest
-                  ? 'Se connecter'
-                  : 'Enregistrer'}
-              </Button>
-
-              {/* Déconnexion (si connecté) */}
-              {!isTest && user && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleSignOut}
-                  leftIcon={<LogOut className="w-4 h-4" />}
-                  className="hidden sm:flex"
-                >
-                  Déconnexion
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        agendaName={agenda.name}
+        onAgendaNameChange={(name) =>
+          useEditorStore.setState({
+            agenda: { ...agenda, name },
+          })
+        }
+        onPrint={handlePrint}
+        onSave={handleSaveOrAuth}
+        isSaving={isSaving}
+      />
 
       {/* Contenu principal */}
       <div className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
