@@ -90,12 +90,18 @@ export async function POST(request: NextRequest) {
         }
 
         // SECURITE: Verifier le montant paye (protection contre manipulation)
-        if (session.amount_total !== EXPECTED_AMOUNT) {
+        // Accepter 0€ (essai gratuit 7 jours) ou 500 cents (5€)
+        const isValidAmount =
+          session.amount_total === 0 || // Essai gratuit
+          session.amount_total === EXPECTED_AMOUNT // Paiement normal
+
+        if (!isValidAmount) {
           console.error(
             'Montant incorrect:',
             session.amount_total,
-            'attendu:',
-            EXPECTED_AMOUNT
+            'attendu: 0 (essai) ou',
+            EXPECTED_AMOUNT,
+            '(normal)'
           )
           break
         }
