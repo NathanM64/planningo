@@ -21,7 +21,12 @@ interface PlanContextType {
   planName: string
   config: PlanConfig
   colors: { bg: string; text: string; border: string }
-  upgradeMessage: string
+  upgradeMessage: {
+    title: string
+    description: string
+    cta: string
+    targetPlan: PlanKey
+  }
   loading: boolean
   isTest: boolean
   isFree: boolean
