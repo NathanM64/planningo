@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button, Input } from '@/components/ui'
 import { X, Trash2, Check } from 'lucide-react'
@@ -99,7 +100,14 @@ export default function BlockModal({
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <FocusTrap
+          focusTrapOptions={{
+            escapeDeactivates: true,
+            clickOutsideDeactivates: true,
+            onDeactivate: onClose,
+          }}
+        >
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b-2 border-gray-200 sticky top-0 bg-white z-10">
             <h2 className="text-xl font-bold text-gray-900">
@@ -233,7 +241,8 @@ export default function BlockModal({
               </Button>
             </div>
           </div>
-        </div>
+          </div>
+        </FocusTrap>
       </div>
     </>
   )

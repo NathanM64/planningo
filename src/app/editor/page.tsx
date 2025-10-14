@@ -159,7 +159,11 @@ export default function EditorPage() {
 
               <div className="h-6 w-px bg-gray-300 hidden sm:block" />
 
+              <label htmlFor="agenda-name" className="sr-only">
+                Nom de l'agenda
+              </label>
               <input
+                id="agenda-name"
                 type="text"
                 value={agenda.name}
                 onChange={(e) =>

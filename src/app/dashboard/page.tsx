@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import FocusTrap from 'focus-trap-react'
 import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
@@ -346,14 +347,20 @@ export default function DashboardPage() {
 
       {/* Modal Upgrade */}
       {showUpgradeModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowUpgradeModal(false)}
-        >
+        <>
           <div
-            className="bg-white rounded-lg max-w-md w-full p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowUpgradeModal(false)}
+          />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <FocusTrap
+              focusTrapOptions={{
+                escapeDeactivates: true,
+                clickOutsideDeactivates: true,
+                onDeactivate: () => setShowUpgradeModal(false),
+              }}
+            >
+              <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <Crown className="w-6 h-6 text-yellow-600" />
@@ -404,8 +411,10 @@ export default function DashboardPage() {
                 Plus tard
               </Button>
             </div>
+              </div>
+            </FocusTrap>
           </div>
-        </div>
+        </>
       )}
 
       {/* Toast et Confirm containers */}

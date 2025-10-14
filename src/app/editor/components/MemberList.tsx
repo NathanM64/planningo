@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
 import { usePlanLimits } from '@/hooks/usePlanLimits'
 import { useTelemetry } from '@/hooks/useTelemetry'
@@ -149,7 +150,11 @@ export default function MemberList() {
 
                 {editingId === member.id ? (
                   <>
+                    <label htmlFor={`edit-member-${member.id}`} className="sr-only">
+                      Nom du membre
+                    </label>
                     <Input
+                      id={`edit-member-${member.id}`}
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
                       className="flex-1 text-sm py-1"
@@ -210,7 +215,11 @@ export default function MemberList() {
           {/* Formulaire d'ajout */}
           {isAdding ? (
             <div className="space-y-2">
+              <label htmlFor="add-member-input" className="sr-only">
+                Nom du nouveau membre
+              </label>
               <Input
+                id="add-member-input"
                 placeholder="Nom du membre"
                 value={newMemberName}
                 onChange={(e) => setNewMemberName(e.target.value)}
@@ -275,7 +284,14 @@ export default function MemberList() {
             onClick={() => setShowUpgradeModal(false)}
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <FocusTrap
+              focusTrapOptions={{
+                escapeDeactivates: true,
+                clickOutsideDeactivates: true,
+                onDeactivate: () => setShowUpgradeModal(false),
+              }}
+            >
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div
                   className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center`}
@@ -305,7 +321,8 @@ export default function MemberList() {
                   Annuler
                 </Button>
               </div>
-            </div>
+              </div>
+            </FocusTrap>
           </div>
         </>
       )}

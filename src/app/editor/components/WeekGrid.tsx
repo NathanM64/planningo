@@ -166,6 +166,15 @@ export default function WeekGrid() {
                           }`}
                           style={{ minHeight: '100px' }}
                           onClick={() => handleCreateBlock(member.id, dateISO)}
+                          tabIndex={0}
+                          role="button"
+                          aria-label={`Créer un créneau pour ${member.name} le ${format(day, 'EEEE d MMMM', { locale: fr })}`}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              handleCreateBlock(member.id, dateISO)
+                            }
+                          }}
                         >
                           {/* Afficher les blocs */}
                           <div className="space-y-1">
@@ -185,6 +194,16 @@ export default function WeekGrid() {
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     handleEditBlock(block)
+                                  }}
+                                  role="button"
+                                  tabIndex={0}
+                                  aria-label={`Modifier le créneau de ${block.start} à ${block.end}${block.label ? `, ${block.label}` : ''}`}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault()
+                                      e.stopPropagation()
+                                      handleEditBlock(block)
+                                    }
                                   }}
                                 >
                                   <div className="font-semibold">
