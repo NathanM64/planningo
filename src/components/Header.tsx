@@ -56,7 +56,7 @@ export default function Header({
   const LogoSection = () => (
     <div className="flex items-center gap-2">
       <Link
-        href={user ? '/dashboard' : '/'}
+        href="/"
         className="flex items-center gap-2 hover:opacity-80 transition"
         aria-label="Retour à l'accueil"
       >
