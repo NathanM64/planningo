@@ -28,6 +28,8 @@ export function usePlanLimits() {
 
   // Charger le statut Pro depuis la BDD
   useEffect(() => {
+    let isMounted = true
+
     const fetchProStatus = async () => {
       if (!user) {
         setIsPro(false)
@@ -44,27 +46,35 @@ export function usePlanLimits() {
           .eq('id', user.id)
           .single()
 
+        // Vérifier si le composant est toujours monté
+        if (!isMounted) return
+
         if (error) {
           // Si l'utilisateur n'existe pas encore dans users, considérer comme non-Pro
-          // L'utilisateur sera créé automatiquement par le webhook Stripe ou lors du premier paiement
           if (error.code === 'PGRST116') {
             setIsPro(false)
           } else {
-            console.error('Erreur chargement statut Pro:', error)
             setIsPro(false)
           }
         } else {
           setIsPro(data?.is_pro || false)
         }
       } catch (err) {
-        console.error('Erreur:', err)
-        setIsPro(false)
+        if (isMounted) {
+          setIsPro(false)
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchProStatus()
+
+    return () => {
+      isMounted = false
+    }
   }, [user])
 
   const planKey: PlanKey = getUserPlan(!!user, isPro)

@@ -76,12 +76,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    // Forcer le nettoyage du state local
+    // Nettoyer immédiatement le state local
     setUser(null)
     setSession(null)
-    // Rediriger vers la page d'accueil
-    window.location.href = '/'
+    // Appeler Supabase signOut
+    await supabase.auth.signOut()
+    // Rediriger après un court délai pour s'assurer que tout est nettoyé
+    setTimeout(() => {
+      window.location.href = '/'
+    }, 100)
   }
 
   const resetPassword = async (email: string) => {
