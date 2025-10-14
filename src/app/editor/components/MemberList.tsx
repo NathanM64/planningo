@@ -163,6 +163,7 @@ export default function MemberList() {
                       size="sm"
                       variant="ghost"
                       onClick={handleSaveEdit}
+                      aria-label="Enregistrer les modifications"
                       className="p-1 h-auto"
                     >
                       <Check className="w-4 h-4" />
@@ -171,6 +172,7 @@ export default function MemberList() {
                       size="sm"
                       variant="ghost"
                       onClick={handleCancelEdit}
+                      aria-label="Annuler les modifications"
                       className="p-1 h-auto"
                     >
                       <X className="w-4 h-4" />
@@ -185,6 +187,7 @@ export default function MemberList() {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleStartEdit(member.id, member.name)}
+                      aria-label={`Modifier le membre ${member.name}`}
                       className="p-1 h-auto"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -193,6 +196,7 @@ export default function MemberList() {
                       size="sm"
                       variant="ghost"
                       onClick={() => removeMember(member.id)}
+                      aria-label={`Supprimer le membre ${member.name}`}
                       className="p-1 h-auto text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -231,6 +235,7 @@ export default function MemberList() {
                   }}
                   variant="outline"
                   size="sm"
+                  aria-label="Annuler l'ajout"
                 >
                   <X className="w-4 h-4" />
                 </Button>

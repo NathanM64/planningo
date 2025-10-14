@@ -12,6 +12,7 @@ import {
 } from '@/types/agenda'
 import { getRandomBlockColor } from '@/lib/colors'
 import { saveAgenda, loadAgenda, deleteAgenda } from '@/lib/agendaService'
+import { toastService } from '@/lib/toastService'
 
 interface EditorState {
   // État actuel
@@ -258,15 +259,16 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           isSaving: false,
         })
         console.log('✅ Agenda sauvegardé')
+        toastService.success('Agenda sauvegardé avec succès')
       } else {
         console.error('❌ Erreur:', result.error)
         set({ isSaving: false })
-        alert(`Erreur: ${result.error}`)
+        toastService.error(`Erreur: ${result.error}`)
       }
     } catch (error) {
       console.error('❌ Erreur inattendue:', error)
       set({ isSaving: false })
-      alert('Erreur de sauvegarde')
+      toastService.error('Erreur de sauvegarde')
     }
   },
 
@@ -287,12 +289,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       } else {
         console.error('❌ Erreur:', result.error)
         set({ isLoading: false })
-        alert(`Erreur: ${result.error}`)
+        toastService.error(`Erreur: ${result.error}`)
       }
     } catch (error) {
       console.error('❌ Erreur inattendue:', error)
       set({ isLoading: false })
-      alert('Erreur de chargement')
+      toastService.error('Erreur de chargement')
     }
   },
 
@@ -306,13 +308,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         if (state.agenda?.id === agendaId) {
           state.createNewAgenda()
         }
+        toastService.success('Agenda supprimé avec succès')
       } else {
         console.error('❌ Erreur:', result.error)
-        alert(`Erreur: ${result.error}`)
+        toastService.error(`Erreur: ${result.error}`)
       }
     } catch (error) {
       console.error('❌ Erreur inattendue:', error)
-      alert('Erreur de suppression')
+      toastService.error('Erreur de suppression')
     }
   },
 }))

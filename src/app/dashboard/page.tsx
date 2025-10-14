@@ -11,6 +11,8 @@ import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button } from '@/components/ui'
 import CheckoutButton from '@/components/CheckoutButton'
+import { useToast } from '@/hooks/useToast'
+import { useConfirm } from '@/hooks/useConfirm'
 import {
   Calendar,
   Plus,
@@ -34,6 +36,8 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth()
   const { plan, limits, canAddAgenda } = usePlanLimits()
   const createNewAgenda = useEditorStore((state) => state.createNewAgenda)
+  const { showToast, ToastContainer } = useToast()
+  const { confirm, ConfirmContainer } = useConfirm()
 
   const [agendas, setAgendas] = useState<AgendaItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -83,17 +87,30 @@ export default function DashboardPage() {
   }
 
   const handleDeleteAgenda = async (agendaId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet agenda ?')) return
+    confirm({
+      title: 'Confirmer la suppression',
+      message: 'Êtes-vous sûr de vouloir supprimer cet agenda ?',
+      variant: 'danger',
+      confirmLabel: 'Supprimer',
+      onConfirm: async () => {
+        setDeletingId(agendaId)
+        const result = await deleteAgenda(agendaId)
 
-    setDeletingId(agendaId)
-    const result = await deleteAgenda(agendaId)
-
-    if (result.success) {
-      setAgendas((prev) => prev.filter((a) => a.id !== agendaId))
-    } else {
-      alert(`Erreur: ${result.error}`)
-    }
-    setDeletingId(null)
+        if (result.success) {
+          setAgendas((prev) => prev.filter((a) => a.id !== agendaId))
+          showToast({
+            type: 'success',
+            message: 'Agenda supprimé avec succès',
+          })
+        } else {
+          showToast({
+            type: 'error',
+            message: `Erreur: ${result.error}`,
+          })
+        }
+        setDeletingId(null)
+      },
+    })
   }
 
   const formatDate = (dateStr: string) => {
@@ -390,6 +407,10 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Toast et Confirm containers */}
+      <ToastContainer />
+      <ConfirmContainer />
     </div>
   )
 }

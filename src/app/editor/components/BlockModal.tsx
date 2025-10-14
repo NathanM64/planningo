@@ -107,6 +107,7 @@ export default function BlockModal({
             </h2>
             <button
               onClick={onClose}
+              aria-label="Fermer la fen\u00eatre"
               className="text-gray-400 hover:text-gray-600 transition"
             >
               <X className="w-6 h-6" />

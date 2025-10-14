@@ -43,6 +43,7 @@ export default function TestModeBanner() {
             </Button>
             <button
               onClick={() => setIsDismissed(true)}
+              aria-label="Masquer la bannière"
               className={`${colors.text} hover:opacity-70 transition`}
             >
               <X className="w-4 h-4" />
