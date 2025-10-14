@@ -34,8 +34,35 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Planningo',
+    applicationCategory: 'BusinessApplication',
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: '0',
+      highPrice: '5',
+      priceCurrency: 'EUR',
+    },
+    description:
+      'Outil simple pour créer et imprimer des plannings hebdomadaires pour votre équipe',
+    operatingSystem: 'Web',
+    url: 'https://planningo.app',
+    author: {
+      '@type': 'Person',
+      name: 'Nathan Marimbordes',
+    },
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header unifié */}
       <Header
         showPlanBadge={false}

@@ -1,7 +1,7 @@
 // src/app/editor/components/WeekGrid.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useEditorStore } from '@/stores/editorStore'
 import { getWeekDays, formatDateISO } from '@/types/agenda'
 import { AgendaBlock } from '@/types/agenda'
@@ -13,7 +13,7 @@ import BlockModal from './BlockModal'
 
 const HOURS = Array.from({ length: 11 }, (_, i) => i + 8)
 
-export default function WeekGrid() {
+function WeekGrid() {
   const { agenda, goToPreviousWeek, goToNextWeek, goToToday } = useEditorStore()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -44,8 +44,13 @@ export default function WeekGrid() {
 
   if (!agenda) return null
 
-  const weekDays = getWeekDays(agenda.currentWeekStart)
+  // Memoize calculations to avoid recalculating on every render
+  const weekDays = useMemo(
+    () => getWeekDays(agenda.currentWeekStart),
+    [agenda.currentWeekStart]
+  )
   const hasMembers = agenda.members.length > 0
+  const today = useMemo(() => formatDateISO(new Date()), [])
 
   return (
     <>
@@ -108,8 +113,8 @@ export default function WeekGrid() {
                     </span>
                   </th>
                   {weekDays.map((day, index) => {
-                    const isToday =
-                      formatDateISO(day) === formatDateISO(new Date())
+                    const dateISO = formatDateISO(day)
+                    const isToday = dateISO === today
                     return (
                       <th
                         key={index}
@@ -149,7 +154,7 @@ export default function WeekGrid() {
                     {/* Colonnes des jours */}
                     {weekDays.map((day, dayIndex) => {
                       const dateISO = formatDateISO(day)
-                      const isToday = dateISO === formatDateISO(new Date())
+                      const isToday = dateISO === today
 
                       // 🆕 Récupérer les blocs qui contiennent ce membre pour ce jour
                       const blocksForDay = agenda.blocks.filter(
@@ -247,3 +252,5 @@ export default function WeekGrid() {
     </>
   )
 }
+
+export default memo(WeekGrid)

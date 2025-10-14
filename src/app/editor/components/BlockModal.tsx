@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button, Input } from '@/components/ui'
@@ -15,7 +15,7 @@ interface BlockModalProps {
   blockToEdit?: AgendaBlock | null
 }
 
-export default function BlockModal({
+function BlockModal({
   isOpen,
   onClose,
   memberId: initialMemberId,
@@ -247,3 +247,5 @@ export default function BlockModal({
     </>
   )
 }
+
+export default memo(BlockModal)

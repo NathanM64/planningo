@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
@@ -16,7 +16,7 @@ import {
 } from '@/components/ui'
 import { Plus, Trash2, Edit2, Check, X, Crown, Lock } from 'lucide-react'
 
-export default function MemberList() {
+function MemberList() {
   const router = useRouter()
   const { agenda, addMember, updateMember, removeMember } = useEditorStore()
   const {
@@ -329,3 +329,5 @@ export default function MemberList() {
     </>
   )
 }
+
+export default memo(MemberList)

@@ -16,6 +16,36 @@ export default function PricingPage() {
   const { user } = useAuth()
   const { plan: currentPlan } = usePlanLimits()
 
+  // JSON-LD structured data for pricing
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Planningo Pro',
+    description:
+      'Outil de planification hebdomadaire pour équipes avec agendas et membres illimités',
+    brand: {
+      '@type': 'Brand',
+      name: 'Planningo',
+    },
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Plan Gratuit',
+        price: '0',
+        priceCurrency: 'EUR',
+        availability: 'https://schema.org/InStock',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Plan Pro',
+        price: '5',
+        priceCurrency: 'EUR',
+        availability: 'https://schema.org/InStock',
+        priceValidUntil: '2026-12-31',
+      },
+    ],
+  }
+
   const handleSelectPlan = (planKey: 'test' | 'free' | 'pro') => {
     if (planKey === 'test') {
       router.push('/editor')
@@ -46,6 +76,11 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header unifié */}
       <Header />
 
