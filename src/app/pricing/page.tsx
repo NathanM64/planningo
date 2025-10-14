@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import { PLANS } from '@/config/plans'
 import { Button } from '@/components/ui'
 import CheckoutButton from '@/components/CheckoutButton'

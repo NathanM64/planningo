@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import { Zap, TestTube, Crown } from 'lucide-react'
 
 export default function PlanBadge() {

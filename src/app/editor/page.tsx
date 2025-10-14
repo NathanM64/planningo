@@ -4,7 +4,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEditorStore } from '@/stores/editorStore'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import { useTelemetry } from '@/hooks/useTelemetry'
 import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'

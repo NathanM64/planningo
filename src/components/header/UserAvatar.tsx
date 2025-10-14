@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import PlanBadge from '@/components/PlanBadge'
 
 export default function UserAvatar() {

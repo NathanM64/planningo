@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import UserAvatar from './UserAvatar'
 
 interface HeaderMobileMenuProps {

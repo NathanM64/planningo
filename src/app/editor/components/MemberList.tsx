@@ -4,7 +4,7 @@ import { useState, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import { useTelemetry } from '@/hooks/useTelemetry'
 import {
   Button,

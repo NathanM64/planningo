@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { usePlanLimits } from '@/hooks/usePlanLimits'
+import { usePlanLimits } from '@/contexts/PlanContext'
 import { useTelemetry } from '@/hooks/useTelemetry'
 import { Button } from '@/components/ui'
 import { AlertTriangle, X } from 'lucide-react'

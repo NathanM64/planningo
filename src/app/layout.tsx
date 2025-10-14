@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { PlanProvider } from '@/contexts/PlanContext'
 import { GlobalToast } from '@/components/ui/GlobalToast'
 import Header from '@/components/Header'
 
@@ -20,9 +21,11 @@ export default function RootLayout({
     <html lang="fr">
       <body className="antialiased bg-white text-gray-900">
         <AuthProvider>
-          <Header />
-          {children}
-          <GlobalToast />
+          <PlanProvider>
+            <Header />
+            {children}
+            <GlobalToast />
+          </PlanProvider>
         </AuthProvider>
       </body>
     </html>
