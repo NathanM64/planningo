@@ -138,10 +138,13 @@ export default function DashboardPage() {
     return formatDate(dateStr)
   }
 
+  // Redirection immédiate pour mode test (avant tout render)
   if (!authLoading && plan === 'test' && !user) {
+    router.push('/editor')
     return null
   }
 
+  // Loading state uniquement APRÈS check redirection
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

@@ -3,22 +3,67 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+import { createBrowserClient } from '@supabase/ssr'
 import { Button } from '@/components/ui'
 import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SuccessPage() {
   const router = useRouter()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(true)
+  const [isPro, setIsPro] = useState(false)
 
   useEffect(() => {
-    // Petit délai pour laisser le webhook s'exécuter
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 2000)
+    if (!user) return
 
-    return () => clearTimeout(timer)
-  }, [])
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    let attempts = 0
+    const maxAttempts = 10 // 10 secondes max
+
+    // Polling pour vérifier le statut Pro
+    const checkProStatus = async () => {
+      const { data } = await supabase
+        .from('users')
+        .select('is_pro')
+        .eq('id', user.id)
+        .single()
+
+      if (data?.is_pro) {
+        setIsPro(true)
+        setLoading(false)
+        return true
+      }
+
+      attempts++
+      if (attempts >= maxAttempts) {
+        // Après 10 secondes, on considère que c'est OK
+        setIsPro(true)
+        setLoading(false)
+        return true
+      }
+
+      return false
+    }
+
+    // Check initial immédiat
+    checkProStatus()
+
+    // Polling toutes les secondes
+    const interval = setInterval(async () => {
+      const done = await checkProStatus()
+      if (done) {
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [user])
 
   if (loading) {
     return (

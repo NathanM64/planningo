@@ -43,12 +43,13 @@ export default function EditorPage() {
   useEffect(() => {
     const loadAgendaId = searchParams.get('load')
 
-    if (loadAgendaId && !hasLoadedFromUrl) {
+    if (loadAgendaId && !hasLoadedFromUrl && !isLoading) {
       console.log("📂 Chargement de l'agenda:", loadAgendaId)
       loadFromCloud(loadAgendaId)
       setHasLoadedFromUrl(true)
-    } else if (!loadAgendaId && !agenda && !hasLoadedFromUrl) {
+    } else if (!loadAgendaId && !agenda && !hasLoadedFromUrl && !isLoading) {
       // Créer un nouvel agenda seulement si aucun paramètre load et pas d'agenda
+      // Protection contre race condition: vérifier que isLoading est false
       createNewAgenda()
       trackAgendaCreate()
       setHasLoadedFromUrl(true)
@@ -57,6 +58,7 @@ export default function EditorPage() {
     searchParams,
     agenda,
     hasLoadedFromUrl,
+    isLoading,
     createNewAgenda,
     loadFromCloud,
     trackAgendaCreate,
