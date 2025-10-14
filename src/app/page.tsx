@@ -1,4 +1,4 @@
-// src/app/page.tsx
+// src/app/page.tsx - Landing page
 import Link from 'next/link'
 import { Button } from '@/components/ui'
 import { Calendar, Printer, Users, ArrowRight, Sparkles } from 'lucide-react'
