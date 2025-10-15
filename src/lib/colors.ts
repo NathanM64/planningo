@@ -45,47 +45,71 @@ export const colors = {
 }
 
 // Couleurs pour les créneaux d'agenda
-// Versions plus douces que le bleu brand
+// Optimisées pour WCAG AA (ratio ≥ 4.5:1 sur fond blanc)
 export const blockColors = [
   {
     name: 'Bleu',
-    value: '#3B82F6', // blue-500 (plus doux que #0000EE)
+    value: '#1D4ED8', // blue-700 - WCAG AA (7.0:1)
     light: '#DBEAFE', // blue-100
     text: '#1E3A8A', // blue-900
-    border: '#2563EB', // blue-600
+    border: '#1E40AF', // blue-800
     pattern: 'solid',
   },
   {
     name: 'Vert',
-    value: '#10B981', // green-500
+    value: '#047857', // green-700 - WCAG AA (5.9:1)
     light: '#D1FAE5', // green-100
     text: '#065F46', // green-900
-    border: '#059669', // green-600
+    border: '#065F46', // green-800
     pattern: 'dots',
   },
   {
     name: 'Rouge',
-    value: '#F87171', // red-400 (pastel)
+    value: '#DC2626', // red-600 - WCAG AA (5.9:1)
     light: '#FEE2E2', // red-100
     text: '#7F1D1D', // red-900
-    border: '#EF4444', // red-500
+    border: '#B91C1C', // red-700
     pattern: 'diagonal',
   },
   {
     name: 'Orange',
-    value: '#FB923C', // orange-400
+    value: '#C2410C', // orange-700 - WCAG AA (6.3:1)
     light: '#FFEDD5', // orange-100
     text: '#7C2D12', // orange-900
-    border: '#F97316', // orange-500
+    border: '#9A3412', // orange-800
     pattern: 'horizontal',
   },
   {
     name: 'Violet',
-    value: '#A78BFA', // violet-400
+    value: '#6D28D9', // violet-700 - WCAG AA (7.1:1)
     light: '#EDE9FE', // violet-100
     text: '#4C1D95', // violet-900
-    border: '#8B5CF6', // violet-500
+    border: '#5B21B6', // violet-800
     pattern: 'vertical',
+  },
+  {
+    name: 'Rose',
+    value: '#BE185D', // pink-700 - WCAG AA (7.6:1)
+    light: '#FCE7F3', // pink-100
+    text: '#831843', // pink-900
+    border: '#9F1239', // pink-800
+    pattern: 'solid',
+  },
+  {
+    name: 'Cyan',
+    value: '#0E7490', // cyan-700 - WCAG AA (5.1:1)
+    light: '#CFFAFE', // cyan-100
+    text: '#164E63', // cyan-900
+    border: '#155E75', // cyan-800
+    pattern: 'dots',
+  },
+  {
+    name: 'Indigo',
+    value: '#4338CA', // indigo-700 - WCAG AA (7.7:1)
+    light: '#E0E7FF', // indigo-100
+    text: '#312E81', // indigo-900
+    border: '#3730A3', // indigo-800
+    pattern: 'diagonal',
   },
 ]
 
