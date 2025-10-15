@@ -3,17 +3,24 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePlanLimits } from '@/contexts/PlanContext'
 import { PLANS } from '@/config/plans'
 import { Button } from '@/components/ui'
 import CheckoutButton from '@/components/CheckoutButton'
 import { Check, X, ArrowRight, Crown, Zap, TestTube } from 'lucide-react'
+import { analytics } from '@/lib/analytics'
 
 export default function PricingPage() {
   const router = useRouter()
   const { user } = useAuth()
   const { plan: currentPlan } = usePlanLimits()
+
+  // Track pricing page view
+  useEffect(() => {
+    analytics.pricingViewed()
+  }, [])
 
   // JSON-LD structured data for pricing
   const jsonLd = {
@@ -46,6 +53,8 @@ export default function PricingPage() {
   }
 
   const handleSelectPlan = (planKey: 'test' | 'free' | 'pro') => {
+    analytics.pricingPlanClicked(planKey)
+
     if (planKey === 'test') {
       router.push('/editor')
     } else if (planKey === 'free') {

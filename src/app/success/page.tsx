@@ -8,6 +8,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Button } from '@/components/ui'
 import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { analytics } from '@/lib/analytics'
 
 export default function SuccessPage() {
   const router = useRouter()
@@ -37,6 +38,8 @@ export default function SuccessPage() {
       if (data?.is_pro) {
         setIsPro(true)
         setLoading(false)
+        // Track checkout completed
+        analytics.checkoutCompleted('pro', 500)
         return true
       }
 

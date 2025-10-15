@@ -12,6 +12,7 @@ import { useEditorStore } from '@/stores/editorStore'
 import { Button } from '@/components/ui'
 import { useToast } from '@/hooks/useToast'
 import { useConfirm } from '@/hooks/useConfirm'
+import { analytics } from '@/lib/analytics'
 import {
   Calendar,
   Plus,
@@ -77,6 +78,8 @@ export default function DashboardPage() {
       if (result.success && result.data) {
         // Les membres sont deja charges depuis loadAllAgendas (optimisation N+1)
         setAgendas(result.data)
+        // Track dashboard visit
+        analytics.dashboardVisited(result.data.length)
       } else {
         console.error('Erreur chargement agendas:', result.error)
       }
@@ -90,10 +93,12 @@ export default function DashboardPage() {
     const canCreate = canAddAgenda(agendas.length)
 
     if (!canCreate) {
+      analytics.upgradeModalShown(plan as 'test' | 'free', 'agenda_limit')
       setShowUpgradeModal(true)
       return
     }
 
+    analytics.createAgenda(plan as 'test' | 'free' | 'pro')
     createNewAgenda()
     router.push('/editor')
   }
@@ -429,7 +434,10 @@ export default function DashboardPage() {
                   <Button
                     ref={closeButtonRef}
                     variant="ghost"
-                    onClick={() => setShowUpgradeModal(false)}
+                    onClick={() => {
+                      analytics.upgradeModalClosed(plan as 'test' | 'free', 'cancel')
+                      setShowUpgradeModal(false)
+                    }}
                     className="w-full"
                   >
                     Plus tard

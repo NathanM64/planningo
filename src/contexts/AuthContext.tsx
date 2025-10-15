@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { analytics } from '@/lib/analytics'
 
 interface AuthContextType {
   user: User | null
@@ -53,6 +54,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     })
+
+    if (!error) {
+      analytics.signIn(email)
+    }
+
     return { error }
   }
 
@@ -72,6 +78,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       },
     })
+
+    if (!error) {
+      analytics.signUp(email)
+    }
+
     return { error }
   }
 
@@ -79,6 +90,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Nettoyer immédiatement le state local
     setUser(null)
     setSession(null)
+
+    // Track signOut
+    analytics.signOut()
 
     // Appeler Supabase signOut
     await supabase.auth.signOut()

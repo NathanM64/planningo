@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
 import { Crown, Loader2, AlertCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
+import { analytics } from '@/lib/analytics'
 
 interface CheckoutButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent'
@@ -29,6 +30,11 @@ export default function CheckoutButton({
       window.location.href = '/auth'
       return
     }
+
+    // Track checkout started
+    const source = window.location.pathname.includes('pricing') ? 'pricing' :
+                   window.location.pathname.includes('dashboard') ? 'dashboard' : 'editor'
+    analytics.checkoutStarted('pro', source as 'pricing' | 'dashboard' | 'editor')
 
     setLoading(true)
     setError(null)
