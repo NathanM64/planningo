@@ -239,12 +239,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/contact">
-                <Button
-                  size="lg"
-                  className="bg-[#0000EE] hover:bg-[#0000CC] text-white"
-                >
-                  Demander un agenda sur-mesure
-                </Button>
+                <Button size="lg">Demander un agenda sur-mesure</Button>
               </Link>
             </div>
             <p className="text-sm text-gray-600 mt-4">
