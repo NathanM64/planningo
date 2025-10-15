@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     // Send email via Resend
     try {
       await resend.emails.send({
-        from: 'Planningo <contact@send.planningo.app>',
+        from: 'Planningo Contact <onboarding@resend.dev>',
         to: 'marimbordes.nathan@gmail.com', // Your email to receive contact messages
         replyTo: email,
         subject: `[Planningo] ${subjectLabel} - ${name}`,
