@@ -1,11 +1,19 @@
 // src/lib/agendaService.ts - Version avec support multi-membres par bloc
-import { supabase, isSupabaseConfigured } from './supabaseClient'
+import { createClient } from './supabase/client'
 import { Agenda, Member, AgendaBlock } from '@/types/agenda'
 
 /**
  * Service pour gérer les agendas dans Supabase
  * Version avec support de plusieurs membres par bloc (relation Many-to-Many)
  */
+
+// Helper pour vérifier si Supabase est configuré
+function isSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
+}
 
 // ========== SAUVEGARDER UN AGENDA ==========
 
@@ -21,6 +29,8 @@ export async function saveAgenda(agenda: Agenda): Promise<{
   }
 
   try {
+    const supabase = createClient()
+
     // Récupérer le user_id de la session active
     const {
       data: { user },
@@ -126,6 +136,8 @@ export async function loadAgenda(agendaId: string): Promise<{
   }
 
   try {
+    const supabase = createClient()
+
     // 1. Charger l'agenda
     const { data: agendaData, error: agendaError } = await supabase
       .from('agendas')
@@ -226,6 +238,8 @@ export async function loadAllAgendas(userId?: string): Promise<{
   }
 
   try {
+    const supabase = createClient()
+
     // OPTIMISATION: Charger agendas ET membres en une seule requete (evite N+1)
     let query = supabase
       .from('agendas')
@@ -277,6 +291,8 @@ export async function deleteAgenda(agendaId: string): Promise<{
   }
 
   try {
+    const supabase = createClient()
+
     const { error } = await supabase.from('agendas').delete().eq('id', agendaId)
 
     if (error) throw error
