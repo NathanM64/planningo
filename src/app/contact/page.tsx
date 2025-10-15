@@ -37,12 +37,38 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // TODO: Implement actual email sending (using Resend API or similar)
-    // For now, simulate submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          imageData: imagePreview,
+        }),
+      })
 
-    setSubmitted(true)
-    setIsSubmitting(false)
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de l\'envoi du message')
+      }
+
+      setSubmitted(true)
+    } catch (error) {
+      console.error('Erreur:', error)
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Une erreur est survenue. Veuillez réessayer.'
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (submitted) {
