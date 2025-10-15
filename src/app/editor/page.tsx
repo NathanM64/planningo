@@ -8,12 +8,12 @@ import { usePlanLimits } from '@/contexts/PlanContext'
 import { useTelemetry } from '@/hooks/useTelemetry'
 import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
-import { Loader2 } from 'lucide-react'
 import EditorToolbar from './components/EditorToolbar'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
 import PrintableWeek from './components/PrintableWeek'
 import TestModeBanner from './components/TestModeBanner'
+import EditorSkeleton from './components/EditorSkeleton'
 
 export default function EditorPage() {
   const router = useRouter()
@@ -111,26 +111,9 @@ export default function EditorPage() {
     router.push(isTest ? '/auth' : '/pricing')
   }
 
-  // Afficher un loader pendant le chargement
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Chargement de l'agenda...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!agenda) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Initialisation...</p>
-        </div>
-      </div>
-    )
+  // Afficher un skeleton pendant le chargement
+  if (isLoading || !agenda) {
+    return <EditorSkeleton />
   }
 
   return (
