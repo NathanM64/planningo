@@ -106,7 +106,7 @@ export default function Home() {
         {/* Use Cases Section */}
         <div className="max-w-6xl mx-auto mb-20">
           <h3 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Idéal pour tous les plannings
+            Pour qui est fait Planningo ?
           </h3>
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
             Que vous organisiez des cours, des bénévoles ou des activités,
@@ -114,63 +114,95 @@ export default function Home() {
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="text-3xl mb-3">👨‍🏫</div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">
-                Enseignants
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Emplois du temps, surveillance, permanences, réunions parents
-              </p>
-            </div>
+            <Link href="/planning-enseignants">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
+                <div className="text-3xl mb-3">👨‍🏫</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  Enseignants
+                </h4>
+                <p className="text-gray-600 text-sm mb-3">
+                  Emplois du temps, surveillance, permanences, réunions parents
+                </p>
+                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
+                  En savoir plus →
+                </span>
+              </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="text-3xl mb-3">🤝</div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">
-                Associations
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Planning bénévoles, événements, permanences, maraudes
-              </p>
-            </div>
+            <Link href="/planning-associations">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
+                <div className="text-3xl mb-3">🤝</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  Associations
+                </h4>
+                <p className="text-gray-600 text-sm mb-3">
+                  Planning bénévoles, événements, permanences, maraudes
+                </p>
+                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
+                  En savoir plus →
+                </span>
+              </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="text-3xl mb-3">⚽</div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">
-                Clubs sportifs
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Entraînements, matchs, disponibilités, tournois
-              </p>
-            </div>
+            <Link href="/planning-clubs-sportifs">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
+                <div className="text-3xl mb-3">⚽</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  Clubs sportifs
+                </h4>
+                <p className="text-gray-600 text-sm mb-3">
+                  Entraînements, matchs, disponibilités, tournois
+                </p>
+                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
+                  En savoir plus →
+                </span>
+              </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="text-3xl mb-3">👨‍👩‍👧‍👦</div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">Familles</h4>
-              <p className="text-gray-600 text-sm">
-                Garde d'enfants, tâches ménagères, organisation hebdomadaire
-              </p>
-            </div>
+            <Link href="/planning-familles">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
+                <div className="text-3xl mb-3">👨‍👩‍👧‍👦</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  Familles
+                </h4>
+                <p className="text-gray-600 text-sm mb-3">
+                  Garde d'enfants, tâches ménagères, organisation hebdomadaire
+                </p>
+                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
+                  En savoir plus →
+                </span>
+              </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="text-3xl mb-3">🏥</div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">
-                Professionnels santé
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Roulement infirmières, gardes, astreintes, planning équipe
-              </p>
-            </div>
+            <Link href="/planning-professionnels-sante">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
+                <div className="text-3xl mb-3">🏥</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  Professionnels santé
+                </h4>
+                <p className="text-gray-600 text-sm mb-3">
+                  Roulement infirmières, gardes, astreintes, planning équipe
+                </p>
+                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
+                  En savoir plus →
+                </span>
+              </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="text-3xl mb-3">🎨</div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">
-                Centres de loisirs
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Activités, animateurs, sorties, planning journalier
-              </p>
-            </div>
+            <Link href="/planning-centres-loisirs">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
+                <div className="text-3xl mb-3">🎨</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  Centres de loisirs
+                </h4>
+                <p className="text-gray-600 text-sm mb-3">
+                  Activités, animateurs, sorties, planning journalier
+                </p>
+                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
+                  En savoir plus →
+                </span>
+              </div>
+            </Link>
           </div>
         </div>
 
@@ -492,25 +524,117 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-600 text-sm">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Company */}
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">Planningo</h4>
+              <p className="text-gray-600 text-sm">
+                L'outil simple pour créer et imprimer vos plannings
+                hebdomadaires.
+              </p>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">Produit</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/pricing"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Tarifs
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/editor"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Créer un planning
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Use Cases 1 */}
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">Pour qui ?</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/planning-enseignants"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Enseignants
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/planning-associations"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Associations
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/planning-clubs-sportifs"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Clubs sportifs
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Use Cases 2 */}
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">
+                &nbsp;
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/planning-professionnels-sante"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Professionnels santé
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/planning-familles"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Familles
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/planning-centres-loisirs"
+                    className="text-gray-600 hover:text-gray-900 text-sm transition"
+                  >
+                    Centres de loisirs
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 pt-8">
+            <p className="text-gray-600 text-sm text-center">
               © 2025 Planningo. Tous droits réservés.
             </p>
-            <div className="flex gap-6">
-              <Link
-                href="/pricing"
-                className="text-gray-600 hover:text-gray-900 text-sm transition"
-              >
-                Tarifs
-              </Link>
-              <a
-                href="mailto:marimbordes.nathan@gmail.com"
-                className="text-gray-600 hover:text-gray-900 text-sm transition"
-              >
-                Contact
-              </a>
-            </div>
           </div>
         </div>
       </footer>
