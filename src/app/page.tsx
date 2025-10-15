@@ -80,8 +80,9 @@ export default function Home() {
           </h1>
 
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            L'outil simple et efficace pour créer des plannings personnalisés
-            pour votre équipe. Sans complexité, juste l'essentiel.
+            L'outil simple et efficace pour créer des plannings personnalisés.
+            Enseignants, associations, clubs sportifs, familles ou petites
+            équipes : organisez vos emplois du temps en toute simplicité.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -100,6 +101,77 @@ export default function Home() {
           <p className="text-sm text-gray-500 mt-4">
             Pas de carte bancaire requise • Mode test disponible
           </p>
+        </div>
+
+        {/* Use Cases Section */}
+        <div className="max-w-6xl mx-auto mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-4">
+            Idéal pour tous les plannings
+          </h3>
+          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Que vous organisiez des cours, des bénévoles ou des activités,
+            Planningo s'adapte à vos besoins.
+          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
+              <div className="text-3xl mb-3">👨‍🏫</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Enseignants
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Emplois du temps, surveillance, permanences, réunions parents
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
+              <div className="text-3xl mb-3">🤝</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Associations
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Planning bénévoles, événements, permanences, maraudes
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
+              <div className="text-3xl mb-3">⚽</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Clubs sportifs
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Entraînements, matchs, disponibilités, tournois
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
+              <div className="text-3xl mb-3">👨‍👩‍👧‍👦</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-2">Familles</h4>
+              <p className="text-gray-600 text-sm">
+                Garde d'enfants, tâches ménagères, organisation hebdomadaire
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
+              <div className="text-3xl mb-3">🏥</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Professionnels santé
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Roulement infirmières, gardes, astreintes, planning équipe
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition">
+              <div className="text-3xl mb-3">🎨</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Centres de loisirs
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Activités, animateurs, sorties, planning journalier
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Features Section */}
@@ -150,26 +222,256 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Pricing Preview Section */}
-        <div className="max-w-4xl mx-auto mb-20 bg-white rounded-lg p-12 border-2 border-gray-200 text-center">
-          <h3 className="text-3xl font-bold text-gray-900 mb-4">
+        {/* Custom Agendas Section */}
+        <div className="max-w-4xl mx-auto mb-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-12 border border-blue-200">
+          <div className="text-center">
+            <div className="inline-block mb-4 px-4 py-2 bg-white rounded-full border border-blue-200">
+              <span className="text-[#0000EE] text-sm font-semibold">
+                ✨ Service gratuit
+              </span>
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              Besoin d'un format spécifique ?
+            </h3>
+            <p className="text-gray-700 text-lg mb-6 max-w-2xl mx-auto">
+              Votre agenda nécessite un format particulier ? Nous créons des
+              modèles personnalisés gratuitement pour vous !
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/contact">
+                <Button
+                  size="lg"
+                  className="bg-[#0000EE] hover:bg-[#0000CC] text-white"
+                >
+                  Demander un agenda sur-mesure
+                </Button>
+              </Link>
+            </div>
+            <p className="text-sm text-gray-600 mt-4">
+              Planning scolaire, médical, événementiel... on s'occupe de tout !
+            </p>
+          </div>
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="max-w-5xl mx-auto mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-12">
+            Ils utilisent Planningo
+          </h3>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl">
+                  👩‍🏫
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Marie L.</p>
+                  <p className="text-sm text-gray-600">Enseignante</p>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm italic">
+                "Enfin un outil simple pour organiser mes surveillances et
+                permanences. Je l'imprime et l'affiche en salle des profs !"
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl">
+                  🤝
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Thomas B.</p>
+                  <p className="text-sm text-gray-600">Président asso</p>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm italic">
+                "Parfait pour gérer les bénévoles de notre association. Pas de
+                complexité, juste l'essentiel."
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-xl">
+                  ⚽
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Sophie D.</p>
+                  <p className="text-sm text-gray-600">Coach sportif</p>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm italic">
+                "J'organise les entraînements et matchs de 3 équipes. Très
+                pratique et rapide à mettre en place."
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">
+              <span className="font-semibold text-[#0000EE]">500+</span>{' '}
+              plannings créés
+            </p>
+          </div>
+        </div>
+
+        {/* Pricing Comparison Section */}
+        <div className="max-w-5xl mx-auto mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-4">
             Des tarifs simples et transparents
           </h3>
-          <p className="text-gray-600 text-lg mb-6">
-            Testez gratuitement sans limite de temps, puis choisissez le plan
-            adapté à vos besoins.
+          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Commencez gratuitement sans compte, puis passez Pro pour débloquer
+            toutes les fonctionnalités.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/pricing">
-              <Button size="lg" variant="outline">
-                Voir tous les plans
-              </Button>
-            </Link>
-            <Link href="/editor">
-              <Button size="lg" rightIcon={<ArrowRight className="w-5 h-5" />}>
-                Commencer gratuitement
-              </Button>
-            </Link>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-white rounded-lg p-8 border-2 border-gray-200">
+              <div className="text-center mb-6">
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">Free</h4>
+                <div className="text-4xl font-bold text-gray-900 mb-1">0€</div>
+                <p className="text-gray-600 text-sm">Gratuit pour toujours</p>
+              </div>
+
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start gap-2 text-gray-700">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span className="text-sm">
+                    Jusqu'à <strong>5 membres</strong>
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-700">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span className="text-sm">
+                    <strong>1 agenda</strong> sauvegardé
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-700">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span className="text-sm">Export PDF imprimable</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-500">
+                  <span className="text-gray-400 mt-1">•</span>
+                  <span className="text-sm">Petite marque sur le PDF</span>
+                </li>
+              </ul>
+
+              <Link href="/editor" className="block">
+                <Button variant="outline" className="w-full">
+                  Commencer gratuitement
+                </Button>
+              </Link>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="bg-[#0000EE] rounded-lg p-8 border-2 border-[#0000EE] relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
+                POPULAIRE
+              </div>
+
+              <div className="text-center mb-6">
+                <h4 className="text-2xl font-bold text-white mb-2">Pro</h4>
+                <div className="text-4xl font-bold text-white mb-1">5€</div>
+                <p className="text-blue-200 text-sm">par mois</p>
+              </div>
+
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start gap-2 text-white">
+                  <span className="text-yellow-300 mt-1">✓</span>
+                  <span className="text-sm">
+                    <strong>Membres illimités</strong>
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-white">
+                  <span className="text-yellow-300 mt-1">✓</span>
+                  <span className="text-sm">
+                    <strong>Agendas illimités</strong>
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-white">
+                  <span className="text-yellow-300 mt-1">✓</span>
+                  <span className="text-sm">
+                    <strong>PDF sans marque</strong>
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-white">
+                  <span className="text-yellow-300 mt-1">✓</span>
+                  <span className="text-sm">
+                    Essai gratuit <strong>7 jours</strong>
+                  </span>
+                </li>
+              </ul>
+
+              <Link href="/pricing" className="block">
+                <Button
+                  variant="outline"
+                  className="w-full bg-white text-[#0000EE] hover:bg-gray-100 border-white"
+                >
+                  Passer Pro
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <p className="text-center text-gray-500 text-sm mt-8">
+            Pas de frais cachés • Résiliez à tout moment • Paiement sécurisé
+            par Stripe
+          </p>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="max-w-4xl mx-auto mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-12">
+            Questions fréquentes
+          </h3>
+
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Dois-je créer un compte pour utiliser Planningo ?
+              </h4>
+              <p className="text-gray-600">
+                Non ! Vous pouvez tester l'éditeur immédiatement sans compte ni
+                inscription. Pour sauvegarder vos agendas, créez un compte
+                gratuit en quelques secondes.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Puis-je partager mon planning avec mon équipe ?
+              </h4>
+              <p className="text-gray-600">
+                Actuellement, vous pouvez exporter votre planning en PDF et le
+                partager par email ou l'imprimer. Une fonction de partage en
+                ligne arrive bientôt !
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Quelle est la différence entre Free et Pro ?
+              </h4>
+              <p className="text-gray-600">
+                Le plan Free limite à 5 membres et 1 agenda, avec une petite
+                marque sur le PDF. Le plan Pro (5€/mois) offre membres et
+                agendas illimités, sans marque sur vos exports.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <h4 className="text-lg font-bold text-gray-900 mb-2">
+                Proposez-vous des agendas personnalisés ?
+              </h4>
+              <p className="text-gray-600">
+                Oui ! Si vous avez besoin d'un format spécifique non disponible,
+                contactez-nous. Nous créons des agendas sur-mesure gratuitement
+                pour nos utilisateurs.
+              </p>
+            </div>
           </div>
         </div>
 
