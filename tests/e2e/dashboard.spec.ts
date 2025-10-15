@@ -11,21 +11,21 @@ test.describe('Dashboard (accès)', () => {
   test('Dashboard redirige vers /auth si non connecté', async ({ page }) => {
     await page.goto('/dashboard')
 
-    // Devrait rediriger vers /auth via middleware
-    await page.waitForURL('**/auth')
+    // Devrait rediriger vers /auth via middleware (vérifier juste le chemin)
+    await page.waitForLoadState('networkidle')
     await expect(page.url()).toContain('/auth')
   })
 
   test('Page pricing affiche les 3 plans', async ({ page }) => {
     await page.goto('/pricing')
 
-    // Vérifier présence des 3 plans
-    await expect(page.getByText(/test/i)).toBeVisible()
-    await expect(page.getByText(/free/i)).toBeVisible()
-    await expect(page.getByText(/pro/i)).toBeVisible()
+    // Vérifier présence des 3 plans (utiliser .first() pour éviter strict mode)
+    await expect(page.getByRole('heading', { name: /mode test/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /^gratuit$/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /^pro$/i })).toBeVisible()
 
     // Vérifier le prix Pro
-    await expect(page.getByText(/5€/i)).toBeVisible()
+    await expect(page.getByText(/5€/i).first()).toBeVisible()
   })
 
   test('Bouton checkout Stripe visible sur pricing', async ({ page }) => {

@@ -29,16 +29,16 @@ test.describe('Navigation générale', () => {
     const header = page.locator('header, nav').first()
     await expect(header).toBeVisible()
 
-    // Vérifier les liens principaux (Pricing, Auth)
-    await expect(page.getByRole('link', { name: /tarifs|pricing/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /connexion|se connecter/i })).toBeVisible()
+    // Vérifier les liens principaux (Pricing, Auth) - utiliser .first() pour éviter strict mode violation
+    await expect(page.getByRole('link', { name: /tarifs|pricing/i }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: /connexion|se connecter/i }).first()).toBeVisible()
   })
 
   test('Navigation vers page pricing fonctionne', async ({ page }) => {
     await page.goto('/')
 
-    // Cliquer sur le lien Pricing
-    await page.getByRole('link', { name: /tarifs|pricing/i }).click()
+    // Cliquer sur le lien Pricing (utiliser .first() pour éviter strict mode)
+    await page.getByRole('link', { name: /tarifs|pricing/i }).first().click()
 
     // Vérifier redirection vers /pricing
     await page.waitForURL('**/pricing')
@@ -80,8 +80,8 @@ test.describe('Responsive design', () => {
     await page.setViewportSize({ width: 1920, height: 1080 })
     await page.goto('/')
 
-    // Tous les liens du header devraient être visibles
-    await expect(page.getByRole('link', { name: /tarifs|pricing/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /connexion|se connecter/i })).toBeVisible()
+    // Tous les liens du header devraient être visibles (utiliser .first())
+    await expect(page.getByRole('link', { name: /tarifs|pricing/i }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: /connexion|se connecter/i }).first()).toBeVisible()
   })
 })
