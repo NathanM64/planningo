@@ -40,5 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
 # claude file
 .claude/
+
+# Sentry Config File
+.env.sentry-build-plugin
