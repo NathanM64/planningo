@@ -181,7 +181,7 @@ export default function Home() {
           </h3>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg p-8 border-2 border-gray-200">
+            <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-[#0000EE] transition">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                 <Calendar className="w-6 h-6 text-[#0000EE]" />
               </div>
@@ -194,7 +194,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-8 border-2 border-gray-200">
+            <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-[#0000EE] transition">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-[#10B981]" />
               </div>
@@ -207,7 +207,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-8 border-2 border-gray-200">
+            <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-[#0000EE] transition">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
                 <Printer className="w-6 h-6 text-[#F59E0B]" />
               </div>
