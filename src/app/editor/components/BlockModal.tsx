@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, memo, useRef } from 'react'
 import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button, Input } from '@/components/ui'
@@ -23,6 +23,7 @@ function BlockModal({
   blockToEdit,
 }: BlockModalProps) {
   const { agenda, addBlock, updateBlock, removeBlock } = useEditorStore()
+  const cancelButtonRef = useRef<HTMLButtonElement>(null)
 
   // États du formulaire
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
@@ -30,6 +31,22 @@ function BlockModal({
   const [start, setStart] = useState('09:00')
   const [end, setEnd] = useState('10:00')
   const [label, setLabel] = useState('')
+
+  // Gérer la touche Escape
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen, onClose])
 
   // Pré-remplir le formulaire
   useEffect(() => {
@@ -102,21 +119,31 @@ function BlockModal({
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <FocusTrap
+          active={isOpen}
           focusTrapOptions={{
-            escapeDeactivates: true,
-            clickOutsideDeactivates: true,
-            onDeactivate: onClose,
+            clickOutsideDeactivates: false,
+            allowOutsideClick: true,
+            initialFocus: () => cancelButtonRef.current,
           }}
         >
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto pointer-events-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="block-modal-title"
+          >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b-2 border-gray-200 sticky top-0 bg-white z-10">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 id="block-modal-title" className="text-xl font-bold text-gray-900">
               {blockToEdit ? 'Modifier le créneau' : 'Nouveau créneau'}
             </h2>
             <button
@@ -236,7 +263,7 @@ function BlockModal({
               </Button>
             )}
             <div className="flex gap-2 ml-auto">
-              <Button variant="ghost" onClick={onClose}>
+              <Button ref={cancelButtonRef} variant="ghost" onClick={onClose}>
                 Annuler
               </Button>
               <Button

@@ -4,8 +4,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe, getSuccessUrl, getCancelUrl } from '@/lib/stripe-server'
 import { STRIPE_PRICE_ID } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
+import { createRateLimiter } from '@/lib/rate-limit'
+
+// Rate limiter: max 5 requêtes par minute par IP
+const rateLimiter = createRateLimiter({
+  maxRequests: 5,
+  windowMs: 60000, // 1 minute
+  message: 'Trop de tentatives de paiement. Veuillez réessayer dans une minute.',
+})
 
 export async function POST(request: NextRequest) {
+  // Vérifier le rate limiting
+  const rateLimitResponse = await rateLimiter(request)
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     // Récupérer le token d'auth depuis le header
     const authHeader = request.headers.get('authorization')

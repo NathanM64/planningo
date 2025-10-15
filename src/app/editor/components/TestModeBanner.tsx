@@ -30,7 +30,7 @@ export default function TestModeBanner() {
               <p className={`text-sm font-semibold ${colors.text}`}>
                 {upgradeMessage.title}
               </p>
-              <p className={`text-xs ${colors.text} opacity-90`}>
+              <p className={`text-sm sm:text-xs ${colors.text} opacity-90`}>
                 {upgradeMessage.description} Vos données ne sont PAS
                 sauvegardées.
               </p>

@@ -8,7 +8,7 @@ import { AgendaBlock } from '@/types/agenda'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Button } from '@/components/ui'
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, Plus } from 'lucide-react'
 import BlockModal from './BlockModal'
 
 function WeekGrid() {
@@ -70,39 +70,48 @@ function WeekGrid() {
     <>
       <div className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
         {/* Header avec navigation */}
-        <div className="bg-gray-50 border-b-2 border-gray-200 p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-gray-900">
+        <div className="bg-gray-50 border-b-2 border-gray-200 p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900">
               {format(weekDays[0], 'd MMM', { locale: fr })} -{' '}
               {format(weekDays[6], 'd MMM yyyy', { locale: fr })}
             </h2>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={goToToday}
-              leftIcon={<Calendar className="w-4 h-4" />}
-            >
-              Aujourd&apos;hui
-            </Button>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={goToPreviousWeek}
-              leftIcon={<ChevronLeft className="w-4 h-4" />}
-            >
-              Précédente
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={goToNextWeek}
-              rightIcon={<ChevronRight className="w-4 h-4" />}
-            >
-              Suivante
-            </Button>
+            <div className="flex items-center gap-1 sm:gap-2 w-full sm:w-auto">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={goToPreviousWeek}
+                leftIcon={<ChevronLeft className="w-4 h-4" />}
+                aria-label="Semaine précédente"
+                className="flex-1 sm:flex-initial"
+              >
+                <span className="hidden sm:inline">Précédente</span>
+                <span className="sm:hidden">Préc.</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={goToToday}
+                leftIcon={<Calendar className="w-4 h-4" />}
+                aria-label="Revenir à aujourd'hui"
+                className="flex-1 sm:flex-initial"
+              >
+                <span className="hidden sm:inline">Aujourd&apos;hui</span>
+                <span className="sm:hidden">Auj.</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={goToNextWeek}
+                rightIcon={<ChevronRight className="w-4 h-4" />}
+                aria-label="Semaine suivante"
+                className="flex-1 sm:flex-initial"
+              >
+                <span className="hidden sm:inline">Suivante</span>
+                <span className="sm:hidden">Suiv.</span>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -121,8 +130,8 @@ function WeekGrid() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="p-3 border-r-2 border-gray-200 sticky left-0 z-20 bg-gray-50 min-w-[150px]">
-                    <span className="text-sm font-bold text-gray-700">
+                  <th className="p-2 sm:p-3 border-r-2 border-gray-200 sticky left-0 z-30 bg-gray-50 min-w-[100px] sm:min-w-[150px]">
+                    <span className="text-xs sm:text-sm font-bold text-gray-700">
                       Membre
                     </span>
                   </th>
@@ -132,12 +141,12 @@ function WeekGrid() {
                     return (
                       <th
                         key={index}
-                        className={`p-3 border-r border-gray-200 text-center min-w-[120px] ${
+                        className={`p-2 sm:p-3 border-r border-gray-200 text-center min-w-[100px] sm:min-w-[120px] ${
                           isToday ? 'bg-blue-50 text-blue-900' : 'text-gray-700'
                         }`}
                       >
-                        <div>{format(day, 'EEE', { locale: fr })}</div>
-                        <div className="text-lg font-bold">
+                        <div className="text-xs sm:text-sm">{format(day, 'EEE', { locale: fr })}</div>
+                        <div className="text-base sm:text-lg font-bold">
                           {format(day, 'd')}
                         </div>
                       </th>
@@ -151,15 +160,18 @@ function WeekGrid() {
                   <tr key={member.id} className="border-b-2 border-gray-200">
                     {/* Colonne membre */}
                     <td
-                      className="p-3 border-r-2 border-gray-200 sticky left-0 z-10"
-                      style={{ backgroundColor: member.color + '15' }}
+                      className="p-2 sm:p-3 border-r-2 border-gray-200 sticky left-0 z-20 bg-white"
                     >
-                      <div className="flex items-center gap-2">
+                      <div
+                        className="absolute inset-0 opacity-10"
+                        style={{ backgroundColor: member.color }}
+                      />
+                      <div className="relative flex items-center gap-1.5 sm:gap-2">
                         <div
-                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: member.color }}
                         />
-                        <span className="font-semibold text-gray-900 text-sm truncate">
+                        <span className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
                           {member.name}
                         </span>
                       </div>
@@ -177,23 +189,13 @@ function WeekGrid() {
                       return (
                         <td
                           key={dayIndex}
-                          className={`relative border-r border-gray-200 align-top p-2 cursor-pointer hover:bg-gray-50 transition ${
+                          className={`relative border-r border-gray-200 align-top p-1.5 sm:p-2 ${
                             isToday ? 'bg-blue-50/30' : ''
                           }`}
-                          style={{ minHeight: '100px' }}
-                          onClick={() => handleCreateBlock(member.id, dateISO)}
-                          tabIndex={0}
-                          role="button"
-                          aria-label={`Créer un créneau pour ${member.name} le ${format(day, 'EEEE d MMMM', { locale: fr })}`}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              handleCreateBlock(member.id, dateISO)
-                            }
-                          }}
+                          style={{ minHeight: '80px' }}
                         >
                           {/* Afficher les blocs */}
-                          <div className="space-y-1">
+                          <div className="space-y-1 min-h-[60px]">
                             {blocksForDay.map((block) => {
                               // 🆕 Afficher combien de membres sont sur ce bloc
                               const memberCount = block.memberIds.length
@@ -202,10 +204,10 @@ function WeekGrid() {
                               return (
                                 <div
                                   key={block.id}
-                                  className="rounded p-2 text-xs cursor-pointer hover:opacity-80 transition"
+                                  className="rounded p-1.5 sm:p-2 text-xs cursor-pointer hover:opacity-80 transition"
                                   style={{
                                     backgroundColor: member.color + '40',
-                                    borderLeft: `3px solid ${member.color}`,
+                                    borderLeft: `2px solid ${member.color}`,
                                   }}
                                   onClick={(e) => {
                                     e.stopPropagation()
@@ -222,25 +224,35 @@ function WeekGrid() {
                                     }
                                   }}
                                 >
-                                  <div className="font-semibold">
+                                  <div className="font-semibold text-[10px] sm:text-xs">
                                     {block.start} - {block.end}
                                   </div>
                                   {block.label && (
-                                    <div className="text-gray-700 mt-1">
+                                    <div className="text-gray-700 mt-0.5 text-[10px] sm:text-xs">
                                       {block.label}
                                     </div>
                                   )}
                                   {/* 🆕 Badge si plusieurs membres */}
                                   {isMultiMember && (
-                                    <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                                    <div className="text-[9px] sm:text-xs text-gray-600 mt-0.5 flex items-center gap-0.5">
                                       <span>👥</span>
-                                      <span>{memberCount} membres</span>
+                                      <span>{memberCount}</span>
                                     </div>
                                   )}
                                 </div>
                               )
                             })}
                           </div>
+
+                          {/* Bouton + pour ajouter un créneau */}
+                          <button
+                            onClick={() => handleCreateBlock(member.id, dateISO)}
+                            className="mt-1 w-full py-1.5 text-xs text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition flex items-center justify-center gap-1"
+                            aria-label={`Ajouter un créneau pour ${member.name} le ${format(day, 'EEEE d MMMM', { locale: fr })}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span className="hidden sm:inline">Ajouter</span>
+                          </button>
                         </td>
                       )
                     })}

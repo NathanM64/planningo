@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, memo, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
@@ -36,9 +36,26 @@ function MemberList() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const cancelButtonRef = useRef<HTMLButtonElement>(null)
 
   const currentMemberCount = agenda?.members.length || 0
   const canAddMore = canAdd(currentMemberCount)
+
+  // Gérer la touche Escape pour la modal
+  useEffect(() => {
+    if (!showUpgradeModal) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowUpgradeModal(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showUpgradeModal])
 
   const handleAddMember = () => {
     if (!canAddMore) {
@@ -109,7 +126,7 @@ function MemberList() {
             <CardTitle className="text-lg">Membres de l&apos;équipe</CardTitle>
             <div className="flex items-center gap-2">
               <span
-                className={`text-xs font-medium ${
+                className={`text-sm sm:text-xs font-medium ${
                   canAddMore ? 'text-gray-500' : colors.text
                 }`}
               >
@@ -130,7 +147,7 @@ function MemberList() {
                   <p className={`text-sm font-semibold ${colors.text}`}>
                     Limite atteinte
                   </p>
-                  <p className={`text-xs ${colors.text} opacity-90 mt-1`}>
+                  <p className={`text-sm sm:text-xs ${colors.text} opacity-90 mt-1`}>
                     {upgradeMessage.description}
                   </p>
                   <Button
@@ -315,45 +332,53 @@ function MemberList() {
           <div
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setShowUpgradeModal(false)}
+            aria-hidden="true"
           />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <FocusTrap
+              active={showUpgradeModal}
               focusTrapOptions={{
-                escapeDeactivates: true,
-                clickOutsideDeactivates: true,
-                onDeactivate: () => setShowUpgradeModal(false),
+                clickOutsideDeactivates: false,
+                allowOutsideClick: true,
+                initialFocus: () => cancelButtonRef.current,
               }}
             >
-              <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div
-                  className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center`}
-                >
-                  <Crown className={`w-6 h-6 ${colors.text}`} />
+              <div
+                className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 pointer-events-auto"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="member-upgrade-modal-title"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center`}
+                  >
+                    <Crown className={`w-6 h-6 ${colors.text}`} />
+                  </div>
+                  <h2 id="member-upgrade-modal-title" className="text-xl font-bold text-gray-900">
+                    {upgradeMessage.title}
+                  </h2>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  {upgradeMessage.title}
-                </h2>
-              </div>
 
-              <p className="text-gray-600 mb-6">{upgradeMessage.description}</p>
+                <p className="text-gray-600 mb-6">{upgradeMessage.description}</p>
 
-              <div className="space-y-2">
-                <Button
-                  className="w-full"
-                  onClick={handleUpgrade}
-                  leftIcon={<Crown className="w-4 h-4" />}
-                >
-                  {upgradeMessage.cta}
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full"
-                  onClick={() => setShowUpgradeModal(false)}
-                >
-                  Annuler
-                </Button>
-              </div>
+                <div className="space-y-2">
+                  <Button
+                    className="w-full"
+                    onClick={handleUpgrade}
+                    leftIcon={<Crown className="w-4 h-4" />}
+                  >
+                    {upgradeMessage.cta}
+                  </Button>
+                  <Button
+                    ref={cancelButtonRef}
+                    variant="ghost"
+                    className="w-full"
+                    onClick={() => setShowUpgradeModal(false)}
+                  >
+                    Annuler
+                  </Button>
+                </div>
               </div>
             </FocusTrap>
           </div>

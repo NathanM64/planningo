@@ -23,7 +23,7 @@ export default function PlanBadge() {
         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border ${colors.bg} ${colors.border}`}
       >
         <Icon className={`w-3.5 h-3.5 ${colors.text}`} />
-        <span className={`text-xs font-semibold ${colors.text}`}>{planName}</span>
+        <span className={`text-sm sm:text-xs font-semibold ${colors.text}`}>{planName}</span>
       </div>
     )
   }
@@ -39,7 +39,7 @@ export default function PlanBadge() {
       title={upgradeLabel}
     >
       <Icon className={`w-3.5 h-3.5 ${colors.text}`} />
-      <span className={`text-xs font-semibold ${colors.text}`}>{planName}</span>
+      <span className={`text-sm sm:text-xs font-semibold ${colors.text}`}>{planName}</span>
     </Link>
   )
 }

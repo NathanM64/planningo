@@ -152,15 +152,15 @@ export default function EditorPage() {
       />
 
       {/* Contenu principal */}
-      <div className="flex-1 container mx-auto px-4 pb-6 max-w-7xl">
-        <div className="grid lg:grid-cols-[250px_1fr] gap-6">
+      <div className="flex-1 container mx-auto px-2 sm:px-4 pb-6 max-w-7xl">
+        <div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 lg:gap-6">
           {/* Sidebar - Liste des membres */}
-          <aside className="lg:sticky lg:top-24 lg:self-start">
+          <aside className="lg:sticky lg:top-24 lg:self-start w-full">
             <MemberList />
           </aside>
 
           {/* Main - Grille hebdomadaire */}
-          <main>
+          <main className="w-full min-w-0">
             <WeekGrid />
           </main>
         </div>

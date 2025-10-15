@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import FocusTrap from 'focus-trap-react'
 import Button from './Button'
 
 export interface ConfirmDialogProps {
@@ -58,45 +59,54 @@ export function ConfirmDialog({
       />
 
       {/* Dialog */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="confirm-title"
-        aria-describedby="confirm-message"
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 animate-in zoom-in-95">
-          <h2
-            id="confirm-title"
-            className="text-xl font-bold text-gray-900 mb-2"
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <FocusTrap
+          active={isOpen}
+          focusTrapOptions={{
+            clickOutsideDeactivates: false,
+            allowOutsideClick: true,
+            initialFocus: () => cancelButtonRef.current,
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 pointer-events-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-title"
+            aria-describedby="confirm-message"
           >
-            {title}
-          </h2>
-          <p id="confirm-message" className="text-gray-600 mb-6">
-            {message}
-          </p>
-          <div className="flex gap-3">
-            <Button
-              ref={cancelButtonRef}
-              variant="outline"
-              onClick={onCancel}
-              className="flex-1"
-            >
-              {cancelLabel}
-            </Button>
-            <Button
-              ref={confirmButtonRef}
-              variant={variant === 'danger' ? 'danger' : 'primary'}
-              onClick={() => {
-                onConfirm()
-                onCancel()
-              }}
-              className="flex-1"
-            >
-              {confirmLabel}
-            </Button>
+              <h2
+                id="confirm-title"
+                className="text-xl font-bold text-gray-900 mb-2"
+              >
+                {title}
+              </h2>
+              <p id="confirm-message" className="text-gray-600 mb-6">
+                {message}
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  ref={cancelButtonRef}
+                  variant="outline"
+                  onClick={onCancel}
+                  className="flex-1"
+                >
+                  {cancelLabel}
+                </Button>
+                <Button
+                  ref={confirmButtonRef}
+                  variant={variant === 'danger' ? 'danger' : 'primary'}
+                  onClick={() => {
+                    onConfirm()
+                    onCancel()
+                  }}
+                  className="flex-1"
+                >
+                  {confirmLabel}
+                </Button>
+              </div>
           </div>
-        </div>
+        </FocusTrap>
       </div>
     </>
   )

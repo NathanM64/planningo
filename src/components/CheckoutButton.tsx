@@ -84,7 +84,7 @@ export default function CheckoutButton({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <>
       <Button
         variant={variant}
         size={size}
@@ -103,11 +103,15 @@ export default function CheckoutButton({
       </Button>
 
       {error && (
-        <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg mt-2"
+        >
           <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
-    </div>
+    </>
   )
 }

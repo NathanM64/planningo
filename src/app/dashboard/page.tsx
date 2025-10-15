@@ -1,7 +1,7 @@
 // src/app/dashboard/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import FocusTrap from 'focus-trap-react'
@@ -10,7 +10,6 @@ import { usePlanLimits } from '@/contexts/PlanContext'
 import { loadAllAgendas, deleteAgenda } from '@/lib/agendaService'
 import { useEditorStore } from '@/stores/editorStore'
 import { Button } from '@/components/ui'
-import CheckoutButton from '@/components/CheckoutButton'
 import { useToast } from '@/hooks/useToast'
 import { useConfirm } from '@/hooks/useConfirm'
 import {
@@ -43,6 +42,23 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Gérer la touche Escape
+  useEffect(() => {
+    if (!showUpgradeModal) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowUpgradeModal(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showUpgradeModal])
 
   useEffect(() => {
     if (!authLoading && plan === 'test' && !user) {
@@ -249,7 +265,7 @@ export default function DashboardPage() {
 
                   {agenda.members && agenda.members.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-xs text-gray-500 mb-2">
+                      <p className="text-sm sm:text-xs text-gray-500 mb-2">
                         {agenda.members.length} membre
                         {agenda.members.length > 1 ? 's' : ''}
                       </p>
@@ -257,7 +273,7 @@ export default function DashboardPage() {
                         {agenda.members.slice(0, 3).map((member) => (
                           <div
                             key={member.id}
-                            className="px-2 py-1 rounded text-xs font-medium"
+                            className="px-2 py-1 rounded text-sm sm:text-xs font-medium"
                             style={{
                               backgroundColor: member.color + '20',
                               color: member.color,
@@ -268,7 +284,7 @@ export default function DashboardPage() {
                           </div>
                         ))}
                         {agenda.members.length > 3 && (
-                          <div className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                          <div className="px-2 py-1 rounded text-sm sm:text-xs font-medium bg-gray-100 text-gray-600">
                             +{agenda.members.length - 3}
                           </div>
                         )}
@@ -341,66 +357,84 @@ export default function DashboardPage() {
           <div
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setShowUpgradeModal(false)}
+            aria-hidden="true"
           />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <FocusTrap
+              active={showUpgradeModal}
               focusTrapOptions={{
-                escapeDeactivates: true,
-                clickOutsideDeactivates: true,
-                onDeactivate: () => setShowUpgradeModal(false),
+                clickOutsideDeactivates: false,
+                allowOutsideClick: true,
+                initialFocus: () => closeButtonRef.current,
               }}
             >
-              <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Crown className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  Passez en Pro
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Débloquez les agendas illimités
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-gray-900 mb-2">
-                Avec le plan Pro :
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                  Agendas illimités
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                  Membres illimités
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                  PDF sans marque Planningo
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                  Thèmes personnalisés
-                </li>
-              </ul>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <CheckoutButton className="w-full">
-                Passer en Pro - 5€/mois
-              </CheckoutButton>
-              <Button
-                variant="ghost"
-                onClick={() => setShowUpgradeModal(false)}
-                className="w-full"
+              <div
+                className="bg-white rounded-lg max-w-md w-full p-6 pointer-events-auto"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="upgrade-modal-title"
               >
-                Plus tard
-              </Button>
-            </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Crown className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 id="upgrade-modal-title" className="text-xl font-bold text-gray-900">
+                      Passez en Pro
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Débloquez les agendas illimités
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Avec le plan Pro :
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                      Agendas illimités
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                      Membres illimités
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                      PDF sans marque Planningo
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                      Thèmes personnalisés
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <Button
+                    className="w-full"
+                    onClick={async () => {
+                      if (!user) {
+                        window.location.href = '/auth'
+                        return
+                      }
+                      // TODO: Rediriger vers Stripe checkout
+                      window.location.href = '/pricing'
+                    }}
+                  >
+                    Passer en Pro - 5€/mois
+                  </Button>
+                  <Button
+                    ref={closeButtonRef}
+                    variant="ghost"
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="w-full"
+                  >
+                    Plus tard
+                  </Button>
+                </div>
               </div>
             </FocusTrap>
           </div>

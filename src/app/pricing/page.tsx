@@ -220,14 +220,14 @@ export default function PricingPage() {
 
                   {plan.limitations.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
-                      <p className="text-xs font-semibold text-gray-500 mb-2">
+                      <p className="text-sm sm:text-xs font-semibold text-gray-500 mb-2">
                         Limitations :
                       </p>
                       <div className="space-y-2">
                         {plan.limitations.map((limitation, index) => (
                           <div key={index} className="flex items-start gap-2">
                             <X className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-xs text-gray-500">
+                            <span className="text-sm sm:text-xs text-gray-500">
                               {limitation}
                             </span>
                           </div>
@@ -312,10 +312,10 @@ export default function PricingPage() {
               </tr>
               <tr>
                 <td className="p-4 text-gray-700">Marque sur les PDF</td>
-                <td className="p-4 text-center text-xs text-gray-600">
+                <td className="p-4 text-center text-sm sm:text-xs text-gray-600">
                   Grande marque
                 </td>
-                <td className="p-4 text-center text-xs text-gray-600">
+                <td className="p-4 text-center text-sm sm:text-xs text-gray-600">
                   Petite signature
                 </td>
                 <td className="p-4 text-center text-green-600 font-semibold">
@@ -336,8 +336,8 @@ export default function PricingPage() {
               </tr>
               <tr>
                 <td className="p-4 text-gray-700">Support</td>
-                <td className="p-4 text-center text-xs text-gray-600">—</td>
-                <td className="p-4 text-center text-xs text-gray-600">Email</td>
+                <td className="p-4 text-center text-sm sm:text-xs text-gray-600">—</td>
+                <td className="p-4 text-center text-sm sm:text-xs text-gray-600">Email</td>
                 <td className="p-4 text-center text-green-600 font-semibold">
                   Prioritaire
                 </td>
