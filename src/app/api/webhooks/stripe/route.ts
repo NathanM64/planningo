@@ -66,6 +66,9 @@ export async function POST(request: NextRequest) {
       processed_at: new Date().toISOString(),
     })
 
+    // Variable pour tracker les erreurs de traitement
+    let processingError = false
+
     // Gérer les événements Stripe
     switch (event.type) {
       case 'checkout.session.completed': {
@@ -109,6 +112,7 @@ export async function POST(request: NextRequest) {
 
         if (error) {
           console.error('Erreur mise a jour utilisateur:', error)
+          processingError = true
         }
         break
       }
@@ -125,7 +129,7 @@ export async function POST(request: NextRequest) {
           .single()
 
         if (user) {
-          await supabase
+          const { error } = await supabase
             .from('users')
             .update({
               is_pro: false,
@@ -133,6 +137,11 @@ export async function POST(request: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', user.id)
+
+          if (error) {
+            console.error('Erreur suppression abonnement:', error)
+            processingError = true
+          }
         }
         break
       }
@@ -149,13 +158,18 @@ export async function POST(request: NextRequest) {
           .single()
 
         if (user) {
-          await supabase
+          const { error } = await supabase
             .from('users')
             .update({
               is_pro: isActive,
               updated_at: new Date().toISOString(),
             })
             .eq('id', user.id)
+
+          if (error) {
+            console.error('Erreur mise à jour abonnement:', error)
+            processingError = true
+          }
         }
         break
       }
@@ -163,6 +177,14 @@ export async function POST(request: NextRequest) {
       default:
         // Event non gere, ignorer silencieusement
         break
+    }
+
+    // Retourner 500 si une erreur SQL s'est produite pour que Stripe retry
+    if (processingError) {
+      return NextResponse.json(
+        { error: 'Database error during webhook processing' },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ received: true })

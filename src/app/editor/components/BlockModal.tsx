@@ -61,6 +61,12 @@ function BlockModal({
   const handleSave = () => {
     if (selectedMemberIds.length === 0 || !date) return
 
+    // Validation: l'heure de début doit être avant l'heure de fin
+    if (start >= end) {
+      alert("L'heure de début doit être avant l'heure de fin.")
+      return
+    }
+
     if (blockToEdit) {
       // Mise à jour
       updateBlock(blockToEdit.id, {
@@ -142,6 +148,7 @@ function BlockModal({
                         key={member.id}
                         type="button"
                         onClick={() => toggleMember(member.id)}
+                        aria-label={`${isSelected ? 'Désélectionner' : 'Sélectionner'} ${member.name}`}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition ${
                           isSelected
                             ? 'border-blue-500 bg-blue-50'

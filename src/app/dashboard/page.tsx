@@ -186,7 +186,10 @@ export default function DashboardPage() {
 
             {plan === 'free' && (
               <Link href="/pricing">
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1">
+                <button
+                  className="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1"
+                  aria-label="Passer au plan Pro"
+                >
                   <Crown className="w-4 h-4" />
                   Passer Pro
                 </button>
@@ -316,8 +319,10 @@ export default function DashboardPage() {
                   Limite d'agendas atteinte
                 </h3>
                 <p className="text-sm text-gray-700 mb-4">
-                  Pour créer un nouveau planning, vous devez soit supprimer
-                  l'existant, soit passer en plan Pro.
+                  Vous avez atteint la limite de {limits.maxAgendas} agenda
+                  {limits.maxAgendas && limits.maxAgendas > 1 ? 's' : ''}. Pour en
+                  créer un nouveau, supprimez-en un existant ou passez en plan Pro
+                  pour des agendas illimités.
                 </p>
                 <Link href="/pricing">
                   <Button size="sm" leftIcon={<Crown className="w-4 h-4" />}>

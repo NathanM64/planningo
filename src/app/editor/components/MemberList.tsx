@@ -6,6 +6,7 @@ import FocusTrap from 'focus-trap-react'
 import { useEditorStore } from '@/stores/editorStore'
 import { usePlanLimits } from '@/contexts/PlanContext'
 import { useTelemetry } from '@/hooks/useTelemetry'
+import { useConfirm } from '@/hooks/useConfirm'
 import {
   Button,
   Input,
@@ -28,6 +29,7 @@ function MemberList() {
   } = usePlanLimits()
   const { trackMemberAdd, trackLimitReached, trackUpgradeClick } =
     useTelemetry()
+  const { confirm, ConfirmContainer } = useConfirm()
 
   const [isAdding, setIsAdding] = useState(false)
   const [newMemberName, setNewMemberName] = useState('')
@@ -75,6 +77,26 @@ function MemberList() {
     trackUpgradeClick(isTest ? 'test' : 'free', isTest ? 'free' : 'pro')
     router.push(isTest ? '/auth' : '/pricing')
     setShowUpgradeModal(false)
+  }
+
+  const handleDeleteMember = (memberId: string, memberName: string) => {
+    // Vérifier si le membre a des créneaux assignés
+    const memberBlocks = agenda?.blocks.filter((block) =>
+      block.memberIds.includes(memberId)
+    )
+    const hasBlocks = memberBlocks && memberBlocks.length > 0
+
+    confirm({
+      title: 'Confirmer la suppression',
+      message: hasBlocks
+        ? `${memberName} est assigné à ${memberBlocks.length} créneau${memberBlocks.length > 1 ? 'x' : ''}. En supprimant ce membre, il sera retiré de tous ses créneaux. Continuer ?`
+        : `Êtes-vous sûr de vouloir supprimer ${memberName} ?`,
+      variant: 'danger',
+      confirmLabel: 'Supprimer',
+      onConfirm: () => {
+        removeMember(memberId)
+      },
+    })
   }
 
   if (!agenda) return null
@@ -199,7 +221,7 @@ function MemberList() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => removeMember(member.id)}
+                      onClick={() => handleDeleteMember(member.id, member.name)}
                       aria-label={`Supprimer le membre ${member.name}`}
                       className="p-1 h-auto text-red-600 hover:text-red-700"
                     >
@@ -325,6 +347,9 @@ function MemberList() {
           </div>
         </>
       )}
+
+      {/* Confirm container */}
+      <ConfirmContainer />
     </>
   )
 }
