@@ -1,7 +1,13 @@
 // src/components/PersonaPage.tsx
 import Link from 'next/link'
 import { Button } from '@/components/ui'
-import { ArrowRight, CheckCircle2, HelpCircle } from 'lucide-react'
+import {
+  ArrowRight,
+  CheckCircle2,
+  HelpCircle,
+  AlertCircle,
+  Lightbulb,
+} from 'lucide-react'
 
 interface PainPoint {
   title: string
@@ -80,15 +86,17 @@ export default function PersonaPage({
             {painPoints.map((pain, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg p-6 border border-gray-200"
+                className="bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-red-200 transition-all"
               >
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">❌</span>
+                <div className="w-12 h-12 bg-red-50 border-2 border-red-200 rounded-xl flex items-center justify-center mb-4">
+                  <AlertCircle className="w-6 h-6 text-red-500" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-3">
                   {pain.title}
                 </h3>
-                <p className="text-gray-600 text-sm">{pain.description}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {pain.description}
+                </p>
               </div>
             ))}
           </div>
@@ -107,15 +115,21 @@ export default function PersonaPage({
             {solutions.map((solution, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] transition"
+                className="bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {solution.title}
-                  </h3>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-10 h-10 bg-green-50 border-2 border-green-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {solution.title}
+                    </h3>
+                  </div>
                 </div>
-                <p className="text-gray-600 text-sm">{solution.description}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {solution.description}
+                </p>
               </div>
             ))}
           </div>
@@ -131,12 +145,21 @@ export default function PersonaPage({
             {useCases.map((useCase, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg p-6 border border-gray-200"
+                className="bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE]/30 transition-all"
               >
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {useCase.title}
-                </h3>
-                <p className="text-gray-600">{useCase.description}</p>
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-[#0000EE]/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <Lightbulb className="w-5 h-5 text-[#0000EE]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                      {useCase.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {useCase.description}
+                    </p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>

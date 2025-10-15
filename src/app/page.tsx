@@ -1,7 +1,22 @@
 // src/app/page.tsx - Landing page
 import Link from 'next/link'
 import { Button } from '@/components/ui'
-import { Calendar, Printer, Users, ArrowRight, Sparkles } from 'lucide-react'
+import {
+  Calendar,
+  Printer,
+  Users,
+  ArrowRight,
+  Sparkles,
+  GraduationCap,
+  Heart,
+  Trophy,
+  Home as HomeIcon,
+  Palette,
+  Star,
+  CheckCircle2,
+  Gift,
+  Zap,
+} from 'lucide-react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -114,92 +129,128 @@ export default function Home() {
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Link href="/planning-enseignants">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
-                <div className="text-3xl mb-3">👨‍🏫</div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
+            <Link
+              href="/planning-enseignants"
+              aria-label="En savoir plus sur les plannings pour enseignants"
+            >
+              <div className="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="w-14 h-14 bg-[#0000EE]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0000EE] transition-colors">
+                  <GraduationCap className="w-7 h-7 text-[#0000EE] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
                   Enseignants
                 </h4>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   Emplois du temps, surveillance, permanences, réunions parents
                 </p>
-                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
-                  En savoir plus →
+                <span className="text-[#0000EE] text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                  En savoir plus
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
             </Link>
 
-            <Link href="/planning-associations">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
-                <div className="text-3xl mb-3">🤝</div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
+            <Link
+              href="/planning-associations"
+              aria-label="En savoir plus sur les plannings pour associations"
+            >
+              <div className="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="w-14 h-14 bg-[#0000EE]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0000EE] transition-colors">
+                  <Heart className="w-7 h-7 text-[#0000EE] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
                   Associations
                 </h4>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   Planning bénévoles, événements, permanences, maraudes
                 </p>
-                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
-                  En savoir plus →
+                <span className="text-[#0000EE] text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                  En savoir plus
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
             </Link>
 
-            <Link href="/planning-clubs-sportifs">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
-                <div className="text-3xl mb-3">⚽</div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
+            <Link
+              href="/planning-clubs-sportifs"
+              aria-label="En savoir plus sur les plannings pour clubs sportifs"
+            >
+              <div className="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="w-14 h-14 bg-[#0000EE]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0000EE] transition-colors">
+                  <Trophy className="w-7 h-7 text-[#0000EE] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
                   Clubs sportifs
                 </h4>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   Entraînements, matchs, disponibilités, tournois
                 </p>
-                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
-                  En savoir plus →
+                <span className="text-[#0000EE] text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                  En savoir plus
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
             </Link>
 
-            <Link href="/planning-familles">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
-                <div className="text-3xl mb-3">👨‍👩‍👧‍👦</div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
+            <Link
+              href="/planning-familles"
+              aria-label="En savoir plus sur les plannings pour familles"
+            >
+              <div className="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="w-14 h-14 bg-[#0000EE]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0000EE] transition-colors">
+                  <HomeIcon className="w-7 h-7 text-[#0000EE] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
                   Familles
                 </h4>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   Garde d'enfants, tâches ménagères, organisation hebdomadaire
                 </p>
-                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
-                  En savoir plus →
+                <span className="text-[#0000EE] text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                  En savoir plus
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
             </Link>
 
-            <Link href="/planning-professionnels-sante">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
-                <div className="text-3xl mb-3">🏥</div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
+            <Link
+              href="/planning-professionnels-sante"
+              aria-label="En savoir plus sur les plannings pour professionnels de santé"
+            >
+              <div className="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="w-14 h-14 bg-[#0000EE]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0000EE] transition-colors">
+                  <Heart className="w-7 h-7 text-[#0000EE] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
                   Professionnels santé
                 </h4>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   Roulement infirmières, gardes, astreintes, planning équipe
                 </p>
-                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
-                  En savoir plus →
+                <span className="text-[#0000EE] text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                  En savoir plus
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
             </Link>
 
-            <Link href="/planning-centres-loisirs">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#0000EE] hover:shadow-md transition cursor-pointer h-full">
-                <div className="text-3xl mb-3">🎨</div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
+            <Link
+              href="/planning-centres-loisirs"
+              aria-label="En savoir plus sur les plannings pour centres de loisirs"
+            >
+              <div className="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="w-14 h-14 bg-[#0000EE]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0000EE] transition-colors">
+                  <Palette className="w-7 h-7 text-[#0000EE] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
                   Centres de loisirs
                 </h4>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   Activités, animateurs, sorties, planning journalier
                 </p>
-                <span className="text-[#0000EE] text-sm font-semibold flex items-center gap-1">
-                  En savoir plus →
+                <span className="text-[#0000EE] text-sm font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+                  En savoir plus
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
             </Link>
@@ -213,40 +264,40 @@ export default function Home() {
           </h3>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <Calendar className="w-6 h-6 text-[#0000EE]" />
+            <div className="bg-white rounded-xl p-8 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all">
+              <div className="w-14 h-14 bg-[#0000EE] rounded-xl flex items-center justify-center mb-5 shadow-md shadow-[#0000EE]/20">
+                <Calendar className="w-7 h-7 text-white" />
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 Création rapide
               </h4>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Créez vos plannings hebdomadaires en quelques minutes. Interface
                 intuitive et facile à prendre en main.
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-[#10B981]" />
+            <div className="bg-white rounded-xl p-8 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all">
+              <div className="w-14 h-14 bg-[#10B981] rounded-xl flex items-center justify-center mb-5 shadow-md shadow-[#10B981]/20">
+                <Users className="w-7 h-7 text-white" />
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 Multi-membres
               </h4>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Gérez facilement les plannings de toute votre équipe. Assignez
                 plusieurs membres sur un même créneau.
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-[#0000EE] transition">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <Printer className="w-6 h-6 text-[#F59E0B]" />
+            <div className="bg-white rounded-xl p-8 border-2 border-gray-200 hover:border-[#0000EE] hover:shadow-lg transition-all">
+              <div className="w-14 h-14 bg-[#F59E0B] rounded-xl flex items-center justify-center mb-5 shadow-md shadow-[#F59E0B]/20">
+                <Printer className="w-7 h-7 text-white" />
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 Export PDF
               </h4>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Imprimez vos plannings en un clic. Format optimisé pour
                 l'impression et l'affichage.
               </p>
@@ -257,9 +308,10 @@ export default function Home() {
         {/* Custom Agendas Section */}
         <div className="max-w-4xl mx-auto mb-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-12 border border-blue-200">
           <div className="text-center">
-            <div className="inline-block mb-4 px-4 py-2 bg-white rounded-full border border-blue-200">
-              <span className="text-[#0000EE] text-sm font-semibold">
-                ✨ Service gratuit
+            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-white rounded-full border border-blue-200">
+              <Gift className="w-4 h-4 text-[#0000EE]" />
+              <span className="text-[#0000EE] text-sm font-bold">
+                Service gratuit
               </span>
             </div>
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
@@ -287,52 +339,73 @@ export default function Home() {
           </h3>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg p-6 border border-gray-200">
+            <div className="bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-[#0000EE]/30 transition-all">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl">
-                  👩‍🏫
+                <div className="w-12 h-12 bg-gradient-to-br from-[#0000EE] to-[#0000EE]/70 rounded-full flex items-center justify-center shadow-md">
+                  <GraduationCap className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Marie L.</p>
+                  <p className="font-bold text-gray-900">Marie L.</p>
                   <p className="text-sm text-gray-600">Enseignante</p>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm italic">
-                "Enfin un outil simple pour organiser mes surveillances et
-                permanences. Je l'imprime et l'affiche en salle des profs !"
-              </p>
+              <div className="space-y-3">
+                <div className="flex gap-0.5 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed italic">
+                  "Enfin un outil simple pour organiser mes surveillances et
+                  permanences. Je l'imprime et l'affiche en salle des profs !"
+                </p>
+              </div>
             </div>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200">
+            <div className="bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-[#0000EE]/30 transition-all">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl">
-                  🤝
+                <div className="w-12 h-12 bg-gradient-to-br from-[#0000EE] to-[#0000EE]/70 rounded-full flex items-center justify-center shadow-md">
+                  <Heart className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Thomas B.</p>
+                  <p className="font-bold text-gray-900">Thomas B.</p>
                   <p className="text-sm text-gray-600">Président asso</p>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm italic">
-                "Parfait pour gérer les bénévoles de notre association. Pas de
-                complexité, juste l'essentiel."
-              </p>
+              <div className="space-y-3">
+                <div className="flex gap-0.5 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed italic">
+                  "Parfait pour gérer les bénévoles de notre association. Pas de
+                  complexité, juste l'essentiel."
+                </p>
+              </div>
             </div>
 
-            <div className="bg-white rounded-lg p-6 border border-gray-200">
+            <div className="bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-[#0000EE]/30 transition-all">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-xl">
-                  ⚽
+                <div className="w-12 h-12 bg-gradient-to-br from-[#0000EE] to-[#0000EE]/70 rounded-full flex items-center justify-center shadow-md">
+                  <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Sophie D.</p>
+                  <p className="font-bold text-gray-900">Sophie D.</p>
                   <p className="text-sm text-gray-600">Coach sportif</p>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm italic">
-                "J'organise les entraînements et matchs de 3 équipes. Très
-                pratique et rapide à mettre en place."
-              </p>
+              <div className="space-y-3">
+                <div className="flex gap-0.5 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed italic">
+                  "J'organise les entraînements et matchs de 3 équipes. Très
+                  pratique et rapide à mettre en place."
+                </p>
+              </div>
             </div>
           </div>
 
@@ -364,23 +437,23 @@ export default function Home() {
               </div>
 
               <ul className="space-y-3 mb-6">
-                <li className="flex items-start gap-2 text-gray-700">
-                  <span className="text-green-500 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
                     Jusqu'à <strong>5 membres</strong>
                   </span>
                 </li>
-                <li className="flex items-start gap-2 text-gray-700">
-                  <span className="text-green-500 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
                     <strong>1 agenda</strong> sauvegardé
                   </span>
                 </li>
-                <li className="flex items-start gap-2 text-gray-700">
-                  <span className="text-green-500 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Export PDF imprimable</span>
                 </li>
-                <li className="flex items-start gap-2 text-gray-500">
+                <li className="flex items-start gap-3 text-gray-500">
                   <span className="text-gray-400 mt-1">•</span>
                   <span className="text-sm">Petite marque sur le PDF</span>
                 </li>
@@ -395,7 +468,8 @@ export default function Home() {
 
             {/* Pro Plan */}
             <div className="bg-[#0000EE] rounded-lg p-8 border-2 border-[#0000EE] relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-4 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
+                <Zap className="w-3 h-3" />
                 POPULAIRE
               </div>
 
@@ -406,26 +480,26 @@ export default function Home() {
               </div>
 
               <ul className="space-y-3 mb-6">
-                <li className="flex items-start gap-2 text-white">
-                  <span className="text-yellow-300 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-white">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-300 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
                     <strong>Membres illimités</strong>
                   </span>
                 </li>
-                <li className="flex items-start gap-2 text-white">
-                  <span className="text-yellow-300 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-white">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-300 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
                     <strong>Agendas illimités</strong>
                   </span>
                 </li>
-                <li className="flex items-start gap-2 text-white">
-                  <span className="text-yellow-300 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-white">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-300 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
                     <strong>PDF sans marque</strong>
                   </span>
                 </li>
-                <li className="flex items-start gap-2 text-white">
-                  <span className="text-yellow-300 mt-1">✓</span>
+                <li className="flex items-start gap-3 text-white">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-300 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
                     Essai gratuit <strong>7 jours</strong>
                   </span>
