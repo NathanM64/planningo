@@ -19,9 +19,45 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const validatePassword = (password: string): string | null => {
+    if (password.length < 6) {
+      return 'Le mot de passe doit contenir au moins 6 caractères'
+    }
+    return null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    // Validation côté client
+    if (!validateEmail(email)) {
+      setError('Veuillez entrer une adresse email valide')
+      return
+    }
+
+    const passwordError = validatePassword(password)
+    if (passwordError) {
+      setError(passwordError)
+      return
+    }
+
+    if (mode === 'signup') {
+      if (!firstName.trim() || !lastName.trim()) {
+        setError('Le prénom et le nom sont requis')
+        return
+      }
+      if (firstName.trim().length < 2 || lastName.trim().length < 2) {
+        setError('Le prénom et le nom doivent contenir au moins 2 caractères')
+        return
+      }
+    }
+
     setLoading(true)
 
     try {

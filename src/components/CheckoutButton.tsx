@@ -24,7 +24,7 @@ export default function CheckoutButton({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (retryCount = 0) => {
     if (!user) {
       window.location.href = '/auth'
       return
@@ -55,6 +55,11 @@ export default function CheckoutButton({
       const data = await response.json()
 
       if (!response.ok) {
+        // Si Stripe est down (5xx) et qu'on n'a pas encore retry, on réessaie
+        if (response.status >= 500 && retryCount < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * (retryCount + 1)))
+          return handleCheckout(retryCount + 1)
+        }
         throw new Error(
           data.error || 'Erreur lors de la création de la session'
         )
