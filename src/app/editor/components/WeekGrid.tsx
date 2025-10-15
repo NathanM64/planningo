@@ -1,7 +1,7 @@
 // src/app/editor/components/WeekGrid.tsx
 'use client'
 
-import { useState, useMemo, memo } from 'react'
+import { useState, useMemo, memo, useCallback } from 'react'
 import { useEditorStore } from '@/stores/editorStore'
 import { getWeekDays, formatDateISO } from '@/types/agenda'
 import { AgendaBlock } from '@/types/agenda'
@@ -27,26 +27,40 @@ function WeekGrid() {
   )
   const today = useMemo(() => formatDateISO(new Date()), [])
 
-  const handleCreateBlock = (memberId: string, date: string) => {
+  // Optimisation: créer un index des blocs par membre et date pour éviter les filtres répétés
+  const blocksByMemberAndDate = useMemo(() => {
+    if (!agenda) return {}
+    const index: Record<string, AgendaBlock[]> = {}
+    agenda.blocks.forEach(block => {
+      block.memberIds.forEach(memberId => {
+        const key = `${memberId}-${block.date}`
+        if (!index[key]) index[key] = []
+        index[key].push(block)
+      })
+    })
+    return index
+  }, [agenda?.blocks])
+
+  const handleCreateBlock = useCallback((memberId: string, date: string) => {
     setModalMemberId(memberId)
     setModalDate(date)
     setBlockToEdit(null)
     setIsModalOpen(true)
-  }
+  }, [])
 
-  const handleEditBlock = (block: AgendaBlock) => {
+  const handleEditBlock = useCallback((block: AgendaBlock) => {
     setBlockToEdit(block)
     setModalMemberId(undefined)
     setModalDate(undefined)
     setIsModalOpen(true)
-  }
+  }, [])
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalOpen(false)
     setModalMemberId(undefined)
     setModalDate(undefined)
     setBlockToEdit(null)
-  }
+  }, [])
 
   if (!agenda) return null
 
@@ -156,12 +170,9 @@ function WeekGrid() {
                       const dateISO = formatDateISO(day)
                       const isToday = dateISO === today
 
-                      // 🆕 Récupérer les blocs qui contiennent ce membre pour ce jour
-                      const blocksForDay = agenda.blocks.filter(
-                        (block) =>
-                          block.memberIds.includes(member.id) &&
-                          block.date === dateISO
-                      )
+                      // 🆕 Récupérer les blocs depuis l'index optimisé
+                      const key = `${member.id}-${dateISO}`
+                      const blocksForDay = blocksByMemberAndDate[key] || []
 
                       return (
                         <td
