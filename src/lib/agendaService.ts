@@ -21,10 +21,22 @@ export async function saveAgenda(agenda: Agenda): Promise<{
   }
 
   try {
+    // Récupérer le user_id de la session active
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'Utilisateur non authentifié. Veuillez vous connecter.',
+      }
+    }
+
     // 1. Sauvegarder l'agenda principal
     const { error: agendaError } = await supabase.from('agendas').upsert({
       id: agenda.id,
-      user_id: agenda.user_id || null,
+      user_id: user.id, // Utiliser le user_id de la session
       name: agenda.name,
       layout: agenda.layout,
       current_week_start: agenda.currentWeekStart,
