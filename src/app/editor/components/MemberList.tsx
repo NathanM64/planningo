@@ -164,10 +164,22 @@ function MemberList() {
                   backgroundColor: member.color + '10',
                 }}
               >
-                <div
-                  className="w-4 h-4 rounded-full flex-shrink-0"
+                {/* Color picker */}
+                <label
+                  htmlFor={`color-picker-${member.id}`}
+                  className="w-4 h-4 rounded-full flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-gray-400 transition relative"
                   style={{ backgroundColor: member.color }}
-                />
+                  title="Changer la couleur"
+                >
+                  <input
+                    id={`color-picker-${member.id}`}
+                    type="color"
+                    value={member.color}
+                    onChange={(e) => updateMember(member.id, { color: e.target.value })}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    aria-label={`Changer la couleur de ${member.name}`}
+                  />
+                </label>
 
                 {editingId === member.id ? (
                   <>
