@@ -59,7 +59,7 @@ export function usePlanLimits() {
         } else {
           setIsPro(data?.is_pro || false)
         }
-      } catch (err) {
+      } catch {
         if (isMounted) {
           setIsPro(false)
         }

@@ -81,7 +81,7 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
         } else {
           setIsPro(data?.is_pro || false)
         }
-      } catch (err) {
+      } catch {
         if (isMounted) {
           setIsPro(false)
         }

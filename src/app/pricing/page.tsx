@@ -1,7 +1,6 @@
 // src/app/pricing/page.tsx
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'

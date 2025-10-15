@@ -14,7 +14,6 @@ export default function SuccessPage() {
   const router = useRouter()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
-  const [isPro, setIsPro] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -36,7 +35,6 @@ export default function SuccessPage() {
         .single()
 
       if (data?.is_pro) {
-        setIsPro(true)
         setLoading(false)
         // Track checkout completed
         analytics.checkoutCompleted('pro', 500)
@@ -46,7 +44,6 @@ export default function SuccessPage() {
       attempts++
       if (attempts >= maxAttempts) {
         // Après 10 secondes, on considère que c'est OK
-        setIsPro(true)
         setLoading(false)
         return true
       }

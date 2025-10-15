@@ -5,8 +5,6 @@ import {
   Agenda,
   AgendaBlock,
   Member,
-  createEmptyMember,
-  createEmptyBlock,
   getMonday,
   formatDateISO,
 } from '@/types/agenda'

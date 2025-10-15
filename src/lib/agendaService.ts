@@ -1,6 +1,6 @@
 // src/lib/agendaService.ts - Version avec support multi-membres par bloc
 import { createClient } from './supabase/client'
-import { Agenda, Member, AgendaBlock } from '@/types/agenda'
+import { Agenda } from '@/types/agenda'
 
 /**
  * Service pour gérer les agendas dans Supabase

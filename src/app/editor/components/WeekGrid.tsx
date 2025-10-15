@@ -23,7 +23,7 @@ function WeekGrid() {
   // MUST be before any conditional returns to follow React Hooks rules
   const weekDays = useMemo(
     () => agenda ? getWeekDays(agenda.currentWeekStart) : [],
-    [agenda?.currentWeekStart]
+    [agenda]
   )
   const today = useMemo(() => formatDateISO(new Date()), [])
 
@@ -39,7 +39,7 @@ function WeekGrid() {
       })
     })
     return index
-  }, [agenda?.blocks])
+  }, [agenda])
 
   const handleCreateBlock = useCallback((memberId: string, date: string) => {
     setModalMemberId(memberId)

@@ -18,7 +18,7 @@ import EditorSkeleton from './components/EditorSkeleton'
 export default function EditorPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const {
     agenda,
     createNewAgenda,
@@ -27,7 +27,7 @@ export default function EditorPage() {
     isSaving,
     isLoading,
   } = useEditorStore()
-  const { isTest, can, config } = usePlanLimits()
+  const { isTest, config } = usePlanLimits()
   const {
     trackAgendaCreate,
     trackAgendaSave,
@@ -101,15 +101,6 @@ export default function EditorPage() {
     }
   }
 
-  const handleSignOut = async () => {
-    await signOut()
-    router.push('/')
-  }
-
-  const handleUpgrade = () => {
-    trackUpgradeClick(isTest ? 'test' : 'free', isTest ? 'free' : 'pro')
-    router.push(isTest ? '/auth' : '/pricing')
-  }
 
   // Afficher un skeleton pendant le chargement
   if (isLoading || !agenda) {

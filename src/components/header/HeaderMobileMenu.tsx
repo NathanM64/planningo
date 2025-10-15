@@ -75,7 +75,6 @@ export default function HeaderMobileMenu({ isAuthenticated }: HeaderMobileMenuPr
             onClick={(e) => e.stopPropagation()}
             id="mobile-menu"
             role="navigation"
-            aria-modal="true"
             aria-label="Menu de navigation"
           >
             <nav className="container mx-auto px-4 py-6 space-y-1">

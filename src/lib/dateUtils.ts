@@ -1,4 +1,4 @@
-import { format, parse, addDays, startOfWeek } from 'date-fns'
+import { format, addDays, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
 // Jours de la semaine en français
