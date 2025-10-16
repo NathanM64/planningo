@@ -9,7 +9,6 @@ import { useTelemetry } from '@/hooks/useTelemetry'
 import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import EditorToolbar from './components/EditorToolbar'
-import MemberList from './components/MemberList'
 import GridFactory from './components/grids/GridFactory'
 import ViewSwitcher from './components/layout/ViewSwitcher'
 import PrintableWeek from './components/PrintableWeek'
@@ -172,21 +171,14 @@ export default function EditorPage() {
 
       {/* Contenu principal */}
       <div className="flex-1 container mx-auto px-2 sm:px-4 pb-6 max-w-7xl">
-        <div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 lg:gap-6">
-          {/* Sidebar - Liste des membres */}
-          <aside className="lg:sticky lg:top-24 lg:self-start w-full">
-            <MemberList />
-          </aside>
+        {/* Main - Grille avec sélecteur de vue */}
+        <main className="w-full min-w-0 space-y-4">
+          {/* Sélecteur de vue (Week/Month/Day) */}
+          <ViewSwitcher />
 
-          {/* Main - Grille avec sélecteur de vue */}
-          <main className="w-full min-w-0 space-y-4">
-            {/* Sélecteur de vue (Week/Month/Day) */}
-            <ViewSwitcher />
-
-            {/* Grille (affichage selon la vue sélectionnée) */}
-            <GridFactory />
-          </main>
-        </div>
+          {/* Grille (affichage selon la vue sélectionnée) */}
+          <GridFactory />
+        </main>
       </div>
 
       {/* Version imprimable (cachée) */}
