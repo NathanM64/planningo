@@ -9,3 +9,4 @@ export {
   CardFooter,
 } from './Card'
 export { default as Input } from './Input'
+export { Tooltip } from './Tooltip'

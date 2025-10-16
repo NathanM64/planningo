@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Printer, Save, Loader2, Edit2 } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { UseReactToPrintFn } from 'react-to-print'
+import ViewSwitcher from './layout/ViewSwitcher'
 
 interface EditorToolbarProps {
   agendaName: string
@@ -26,9 +27,11 @@ export default function EditorToolbar({
   return (
     <div className="container mx-auto px-4 max-w-7xl pt-6 pb-4">
       <div className="bg-white rounded-lg border border-gray-300 shadow-sm p-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          {/* Nom de l'agenda (éditable) */}
-          <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
+        <div className="flex flex-col gap-4">
+          {/* Première ligne: Nom + Actions */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Nom de l'agenda (éditable) */}
+            <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
             {isEditing ? (
               <input
                 type="text"
@@ -81,6 +84,12 @@ export default function EditorToolbar({
             </Button>
           </div>
         </div>
+
+        {/* Deuxième ligne: ViewSwitcher */}
+        <div className="flex justify-center">
+          <ViewSwitcher />
+        </div>
+      </div>
       </div>
     </div>
   )

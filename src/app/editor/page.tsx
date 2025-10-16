@@ -14,7 +14,11 @@ import GridFactory from './components/grids/GridFactory'
 import PrintableWeek from './components/PrintableWeek'
 import TestModeBanner from './components/TestModeBanner'
 import EditorSkeleton from './components/EditorSkeleton'
-import AgendaSetupModal from './components/AgendaSetupModal'
+import AgendaSetupWizard from './components/wizard/AgendaSetupWizard'
+import KeyboardShortcutsButton from './components/KeyboardShortcutsButton'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import type { WizardConfig } from './components/wizard/types'
+import type { Agenda } from '@/types/agenda'
 
 export default function EditorPage() {
   const router = useRouter()
@@ -22,6 +26,7 @@ export default function EditorPage() {
   const { user } = useAuth()
   const {
     agenda,
+    setAgenda,
     createNewAgenda,
     saveToCloud,
     loadFromCloud,
@@ -101,11 +106,23 @@ export default function EditorPage() {
     }
   }
 
-  const handleSetupConfirm = (mode: import('@/types/agenda').AgendaMode, timeSlotDisplay: import('@/types/agenda').TimeSlotDisplay) => {
-    // Créer l'agenda - le modal se fermera automatiquement via useEffect
-    createNewAgenda(mode, timeSlotDisplay)
+  const handleWizardComplete = (config: WizardConfig, templateAgenda?: Agenda) => {
+    // Si un template agenda est fourni, l'utiliser directement
+    if (templateAgenda) {
+      setAgenda(templateAgenda)
+    } else {
+      // Sinon, créer un agenda vierge avec la configuration
+      createNewAgenda(config.mode, config.timeSlotDisplay, config.fixedPeriods)
+    }
     trackAgendaCreate()
   }
+
+  // Activer les raccourcis clavier
+  useKeyboardShortcuts({
+    onSave: handleSaveOrAuth,
+    onPrint: handlePrint,
+    enabled: !showSetupModal && !!agenda,
+  })
 
   // Effet pour fermer le modal automatiquement une fois l'agenda créé
   useEffect(() => {
@@ -115,16 +132,16 @@ export default function EditorPage() {
   }, [showSetupModal, agenda])
 
 
-  // Afficher le modal de setup si pas d'agenda
+  // Afficher le wizard de setup si pas d'agenda
   if (showSetupModal) {
     return (
-      <AgendaSetupModal
+      <AgendaSetupWizard
         isOpen={showSetupModal}
         onClose={() => {
           // Si on annule, retourner au dashboard
           router.push('/dashboard')
         }}
-        onConfirm={handleSetupConfirm}
+        onComplete={handleWizardComplete}
       />
     )
   }
@@ -177,6 +194,9 @@ export default function EditorPage() {
           />
         )}
       </div>
+
+      {/* Bouton d'aide raccourcis clavier */}
+      <KeyboardShortcutsButton />
     </div>
   )
 }

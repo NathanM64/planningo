@@ -18,6 +18,8 @@ interface EditorState {
   // État actuel
   agenda: Agenda | null
   selectedBlockId: string | null
+  currentView: 'week' | 'month' | 'day'
+  currentDay?: string // Pour DayView (format ISO)
 
   // États Supabase
   isSaving: boolean
@@ -26,7 +28,7 @@ interface EditorState {
 
   // Actions pour l'agenda
   setAgenda: (agenda: Agenda) => void
-  createNewAgenda: (mode?: AgendaMode, timeSlotDisplay?: TimeSlotDisplay) => void
+  createNewAgenda: (mode?: AgendaMode, timeSlotDisplay?: TimeSlotDisplay, fixedPeriods?: import('@/types/agenda').FixedPeriod[]) => void
   updateAgendaName: (name: string) => void
 
   // Actions pour les membres
@@ -45,6 +47,10 @@ interface EditorState {
   goToNextWeek: () => void
   goToToday: () => void
 
+  // Navigation vues
+  setCurrentView: (view: 'week' | 'month' | 'day') => void
+  setCurrentDay: (day: string) => void
+
   // Actions Supabase
   saveToCloud: () => Promise<void>
   loadFromCloud: (agendaId: string) => Promise<void>
@@ -55,6 +61,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   // État initial
   agenda: null,
   selectedBlockId: null,
+  currentView: 'week',
+  currentDay: undefined,
   isSaving: false,
   isLoading: false,
   lastSaved: null,
@@ -65,7 +73,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   // Créer un nouvel agenda
-  createNewAgenda: (mode = 'simple' as AgendaMode, timeSlotDisplay = 'precise-hours' as TimeSlotDisplay) => {
+  createNewAgenda: (mode = 'simple' as AgendaMode, timeSlotDisplay = 'precise-hours' as TimeSlotDisplay, fixedPeriods?: import('@/types/agenda').FixedPeriod[]) => {
     const today = new Date()
     const monday = getMonday(today)
 
@@ -83,6 +91,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       // Nouvelles propriétés configurables
       modeConfig,
       timeSlotDisplay,
+      fixedPeriods, // Ajouter les périodes fixes si fournies
       activeDays: [1, 2, 3, 4, 5, 6, 0], // Tous les jours par défaut
       created_at: new Date().toISOString(),
     }
@@ -248,6 +257,16 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         currentWeekStart: formatDateISO(monday),
       },
     })
+  },
+
+  // ========== NAVIGATION VUES ==========
+
+  setCurrentView: (view) => {
+    set({ currentView: view })
+  },
+
+  setCurrentDay: (day) => {
+    set({ currentDay: day })
   },
 
   // ========== SUPABASE ==========

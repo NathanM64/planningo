@@ -3,32 +3,38 @@
 import { useEditorStore } from '@/stores/editorStore'
 import PreciseHoursGrid from './implementations/PreciseHoursGrid/PreciseHoursGrid'
 import FixedPeriodsGrid from './implementations/FixedPeriodsGrid/FixedPeriodsGrid'
+import MonthView from './views/MonthView'
+import DayView from './views/DayView'
 
 /**
- * Factory Pattern : Sélectionne la grille selon le mode d'affichage
- *
- * Ajouter un nouveau mode :
- * 1. Créer le dossier implementations/NouveauModeGrid/
- * 2. Implémenter les composants (Cell, Block, Grid)
- * 3. Ajouter un case ici
+ * Factory Pattern : Sélectionne la vue selon currentView et timeSlotDisplay
  */
 export default function GridFactory() {
   const agenda = useEditorStore((state) => state.agenda)
+  const currentView = useEditorStore((state) => state.currentView)
 
   if (!agenda) return null
 
-  switch (agenda.timeSlotDisplay) {
-    case 'precise-hours':
-      return <PreciseHoursGrid />
+  // Switch principal par vue
+  switch (currentView) {
+    case 'month':
+      return <MonthView />
 
-    case 'fixed-periods':
-      return <FixedPeriodsGrid />
+    case 'day':
+      return <DayView />
 
-    // case 'full-day':
-    //   return <FullDayGrid />
-
+    case 'week':
     default:
-      // Fallback sur heures précises
-      return <PreciseHoursGrid />
+      // Vue semaine : selon le timeSlotDisplay
+      switch (agenda.timeSlotDisplay) {
+        case 'precise-hours':
+          return <PreciseHoursGrid />
+
+        case 'fixed-periods':
+          return <FixedPeriodsGrid />
+
+        default:
+          return <PreciseHoursGrid />
+      }
   }
 }

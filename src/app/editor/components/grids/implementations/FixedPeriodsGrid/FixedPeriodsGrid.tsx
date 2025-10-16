@@ -5,14 +5,17 @@ import { formatDateISO } from '@/types/agenda'
 import { useGridData } from '@/app/editor/hooks/useGridData'
 import { useBlockModal } from '@/app/editor/hooks/useBlockModal'
 import { createBlockIndexByMemberDatePeriod } from '@/app/editor/lib/block-indexer'
+import { useResponsive } from '@/hooks/useResponsive'
 import GridHeader from '../../BaseGrid/GridHeader'
 import GridEmptyState from '../../BaseGrid/GridEmptyState'
 import GridTableHeader from '../../BaseGrid/GridTableHeader'
 import MemberCell from '../../BaseGrid/MemberCell'
 import FixedPeriodsCell from './FixedPeriodsCell'
-import BlockModal from '../../../BlockModal'
+import FixedPeriodsGridMobile from './FixedPeriodsGridMobile'
+import PropertiesPanel from '../../../panels/PropertiesPanel'
 
 function FixedPeriodsGrid() {
+  const { isMobile } = useResponsive()
   const {
     agenda,
     weekDays,
@@ -52,6 +55,11 @@ function FixedPeriodsGrid() {
   }, [agenda])
 
   if (!agenda) return null
+
+  // Afficher la version mobile si écran < 1024px
+  if (isMobile) {
+    return <FixedPeriodsGridMobile />
+  }
 
   return (
     <>
@@ -101,7 +109,7 @@ function FixedPeriodsGrid() {
         )}
       </div>
 
-      <BlockModal
+      <PropertiesPanel
         isOpen={isModalOpen}
         onClose={closeModal}
         {...modalContext}

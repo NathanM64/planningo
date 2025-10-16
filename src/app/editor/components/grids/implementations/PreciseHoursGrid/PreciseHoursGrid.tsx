@@ -5,14 +5,17 @@ import { formatDateISO } from '@/types/agenda'
 import { useGridData } from '@/app/editor/hooks/useGridData'
 import { useBlockModal } from '@/app/editor/hooks/useBlockModal'
 import { createBlockIndexByMemberDate } from '@/app/editor/lib/block-indexer'
+import { useResponsive } from '@/hooks/useResponsive'
 import GridHeader from '../../BaseGrid/GridHeader'
 import GridEmptyState from '../../BaseGrid/GridEmptyState'
 import GridTableHeader from '../../BaseGrid/GridTableHeader'
 import MemberCell from '../../BaseGrid/MemberCell'
 import PreciseHoursCell from './PreciseHoursCell'
-import BlockModal from '../../../BlockModal'
+import PreciseHoursGridMobile from './PreciseHoursGridMobile'
+import PropertiesPanel from '../../../panels/PropertiesPanel'
 
 function PreciseHoursGrid() {
+  const { isMobile } = useResponsive()
   const {
     agenda,
     weekDays,
@@ -38,6 +41,11 @@ function PreciseHoursGrid() {
   }, [agenda])
 
   if (!agenda) return null
+
+  // Afficher la version mobile si écran < 1024px
+  if (isMobile) {
+    return <PreciseHoursGridMobile />
+  }
 
   return (
     <>
@@ -90,8 +98,8 @@ function PreciseHoursGrid() {
         )}
       </div>
 
-      {/* Modal d'édition/création */}
-      <BlockModal
+      {/* Properties Panel (drawer) */}
+      <PropertiesPanel
         isOpen={isModalOpen}
         onClose={closeModal}
         {...modalContext}
