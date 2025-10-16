@@ -11,6 +11,7 @@ import { useReactToPrint } from 'react-to-print'
 import EditorToolbar from './components/EditorToolbar'
 import MemberList from './components/MemberList'
 import GridFactory from './components/grids/GridFactory'
+import ViewSwitcher from './components/layout/ViewSwitcher'
 import PrintableWeek from './components/PrintableWeek'
 import TestModeBanner from './components/TestModeBanner'
 import EditorSkeleton from './components/EditorSkeleton'
@@ -177,8 +178,12 @@ export default function EditorPage() {
             <MemberList />
           </aside>
 
-          {/* Main - Grille hebdomadaire (via GridFactory) */}
-          <main className="w-full min-w-0">
+          {/* Main - Grille avec sélecteur de vue */}
+          <main className="w-full min-w-0 space-y-4">
+            {/* Sélecteur de vue (Week/Month/Day) */}
+            <ViewSwitcher />
+
+            {/* Grille (affichage selon la vue sélectionnée) */}
             <GridFactory />
           </main>
         </div>
