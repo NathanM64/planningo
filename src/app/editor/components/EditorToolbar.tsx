@@ -2,10 +2,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Printer, Save, Loader2, Edit2, Sparkles } from 'lucide-react'
+import { Printer, Save, Loader2, Edit2 } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { UseReactToPrintFn } from 'react-to-print'
-import TemplatePickerModal from './TemplatePickerModal'
 
 interface EditorToolbarProps {
   agendaName: string
@@ -23,7 +22,6 @@ export default function EditorToolbar({
   isSaving,
 }: EditorToolbarProps) {
   const [isEditing, setIsEditing] = useState(false)
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
 
   return (
     <div className="container mx-auto px-4 max-w-7xl pt-6 pb-4">
@@ -59,16 +57,6 @@ export default function EditorToolbar({
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               size="sm"
-              variant="outline"
-              onClick={() => setIsTemplateModalOpen(true)}
-              leftIcon={<Sparkles className="w-4 h-4" />}
-              className="flex-1 sm:flex-none"
-            >
-              <span className="hidden sm:inline">Templates</span>
-              <span className="sm:hidden">Templates</span>
-            </Button>
-            <Button
-              size="sm"
               variant="ghost"
               onClick={onPrint}
               leftIcon={<Printer className="w-4 h-4" />}
@@ -94,12 +82,6 @@ export default function EditorToolbar({
           </div>
         </div>
       </div>
-
-      {/* Modal de sélection de template */}
-      <TemplatePickerModal
-        isOpen={isTemplateModalOpen}
-        onClose={() => setIsTemplateModalOpen(false)}
-      />
     </div>
   )
 }

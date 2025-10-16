@@ -11,9 +11,11 @@ import { useReactToPrint } from 'react-to-print'
 import EditorToolbar from './components/EditorToolbar'
 import MemberList from './components/MemberList'
 import WeekGrid from './components/WeekGrid'
+import MorningEveningGrid from './components/MorningEveningGrid'
 import PrintableWeek from './components/PrintableWeek'
 import TestModeBanner from './components/TestModeBanner'
 import EditorSkeleton from './components/EditorSkeleton'
+import AgendaSetupModal from './components/AgendaSetupModal'
 
 export default function EditorPage() {
   const router = useRouter()
@@ -35,31 +37,30 @@ export default function EditorPage() {
     trackUpgradeClick,
   } = useTelemetry()
   const printRef = useRef<HTMLDivElement>(null)
-  const [hasLoadedFromUrl, setHasLoadedFromUrl] = useState(false)
+  const hasInitialized = useRef(false)
+  const [showSetupModal, setShowSetupModal] = useState(false)
 
   // Charger l'agenda depuis l'URL si paramètre "load" présent
+  // Ce useEffect ne doit s'exécuter qu'UNE SEULE FOIS au montage
   useEffect(() => {
+    // Utiliser un ref pour empêcher la double exécution en Strict Mode
+    if (hasInitialized.current) return
+
     const loadAgendaId = searchParams.get('load')
 
-    if (loadAgendaId && !hasLoadedFromUrl && !isLoading) {
+    if (loadAgendaId && !isLoading) {
+      // Charger un agenda existant depuis l'URL
       loadFromCloud(loadAgendaId)
-      setHasLoadedFromUrl(true)
-    } else if (!loadAgendaId && !agenda && !hasLoadedFromUrl && !isLoading) {
-      // Créer un nouvel agenda seulement si aucun paramètre load et pas d'agenda
-      // Protection contre race condition: vérifier que isLoading est false
-      createNewAgenda()
-      trackAgendaCreate()
-      setHasLoadedFromUrl(true)
+      hasInitialized.current = true
+    } else if (!loadAgendaId && !isLoading) {
+      // Pas de paramètre load = nouvel agenda
+      // Réinitialiser le store et afficher le modal
+      useEditorStore.setState({ agenda: null, selectedBlockId: null })
+      setShowSetupModal(true)
+      hasInitialized.current = true
     }
-  }, [
-    searchParams,
-    agenda,
-    hasLoadedFromUrl,
-    isLoading,
-    createNewAgenda,
-    loadFromCloud,
-    trackAgendaCreate,
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Alerte de fermeture en mode test
   useEffect(() => {
@@ -101,6 +102,33 @@ export default function EditorPage() {
     }
   }
 
+  const handleSetupConfirm = (mode: import('@/types/agenda').AgendaMode, timeSlotDisplay: import('@/types/agenda').TimeSlotDisplay) => {
+    // Créer l'agenda - le modal se fermera automatiquement via useEffect
+    createNewAgenda(mode, timeSlotDisplay)
+    trackAgendaCreate()
+  }
+
+  // Effet pour fermer le modal automatiquement une fois l'agenda créé
+  useEffect(() => {
+    if (showSetupModal && agenda) {
+      setShowSetupModal(false)
+    }
+  }, [showSetupModal, agenda])
+
+
+  // Afficher le modal de setup si pas d'agenda
+  if (showSetupModal) {
+    return (
+      <AgendaSetupModal
+        isOpen={showSetupModal}
+        onClose={() => {
+          // Si on annule, retourner au dashboard
+          router.push('/dashboard')
+        }}
+        onConfirm={handleSetupConfirm}
+      />
+    )
+  }
 
   // Afficher un skeleton pendant le chargement
   if (isLoading || !agenda) {
@@ -133,9 +161,13 @@ export default function EditorPage() {
             <MemberList />
           </aside>
 
-          {/* Main - Grille hebdomadaire */}
+          {/* Main - Grille hebdomadaire (switch selon timeSlotDisplay) */}
           <main className="w-full min-w-0">
-            <WeekGrid />
+            {agenda.timeSlotDisplay === 'fixed-periods' ? (
+              <MorningEveningGrid />
+            ) : (
+              <WeekGrid />
+            )}
           </main>
         </div>
       </div>

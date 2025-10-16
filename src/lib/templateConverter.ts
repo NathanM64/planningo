@@ -50,8 +50,11 @@ export function convertTemplateToAgenda(template: AgendaTemplate): Agenda {
     name: template.title,
     members,
     blocks,
-    layout: 'weekly',
     currentWeekStart: formatDateISO(monday),
+    // Nouvelles propriétés obligatoires
+    modeConfig: { mode: 'simple' },
+    timeSlotDisplay: 'precise-hours',
+    activeDays: template.config.activeDays,
     created_at: new Date().toISOString(),
   }
 
@@ -78,8 +81,11 @@ export function convertTemplateToEmptyAgenda(template: AgendaTemplate): Agenda {
     name: template.title,
     members,
     blocks: [], // Pas de blocs pré-remplis
-    layout: 'weekly',
     currentWeekStart: formatDateISO(monday),
+    // Nouvelles propriétés obligatoires
+    modeConfig: { mode: 'simple' },
+    timeSlotDisplay: 'precise-hours',
+    activeDays: template.config.activeDays,
     created_at: new Date().toISOString(),
   }
 

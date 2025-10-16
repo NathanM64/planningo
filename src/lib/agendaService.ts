@@ -1,10 +1,10 @@
-// src/lib/agendaService.ts - Version avec support multi-membres par bloc
+// src/lib/agendaService.ts - Version avec support multi-membres par bloc et cycles
 import { createClient } from './supabase/client'
-import { Agenda } from '@/types/agenda'
+import { Agenda, AgendaBlock, formatDateISO } from '@/types/agenda'
 
 /**
  * Service pour gérer les agendas dans Supabase
- * Version avec support de plusieurs membres par bloc (relation Many-to-Many)
+ * Version avec support de plusieurs membres par bloc (relation Many-to-Many) et cycles
  */
 
 // Helper pour vérifier si Supabase est configuré
@@ -13,6 +13,88 @@ function isSupabaseConfigured(): boolean {
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   )
+}
+
+/**
+ * Génère les blocs pour une semaine donnée en mode cycle
+ * @param agenda - L'agenda en mode cycle
+ * @param weekStart - Date de début de semaine (format ISO)
+ * @returns Les blocs générés pour cette semaine
+ */
+function generateCycleBlocksForWeek(
+  agenda: Agenda,
+  weekStart: string
+): AgendaBlock[] {
+  // Vérifier que c'est bien un agenda en mode cycle
+  if (agenda.modeConfig.mode !== 'cycle') {
+    return []
+  }
+
+  const { cycleConfig } = agenda.modeConfig
+  const cycleWeeks = cycleConfig.cycleWeeks
+
+  // Calculer le nombre de semaines écoulées depuis le début de l'agenda
+  const startDate = new Date(agenda.currentWeekStart)
+  const targetDate = new Date(weekStart)
+  const weeksDiff = Math.floor(
+    (targetDate.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+  )
+
+  // Déterminer à quelle semaine du cycle on est
+  const cycleWeekIndex = weeksDiff % cycleWeeks
+
+  // Filtrer les blocs pattern de cette semaine du cycle
+  const patternBlocks = agenda.blocks.filter((block) => {
+    const blockDate = new Date(block.date)
+    const blockWeekStart = new Date(agenda.currentWeekStart)
+    const blockWeeksDiff = Math.floor(
+      (blockDate.getTime() - blockWeekStart.getTime()) /
+        (7 * 24 * 60 * 60 * 1000)
+    )
+    return blockWeeksDiff === cycleWeekIndex
+  })
+
+  // Générer les blocs pour la semaine cible
+  return patternBlocks.map((pattern) => {
+    const patternDate = new Date(pattern.date)
+    const dayOffset = patternDate.getDay()
+    const targetBlockDate = new Date(weekStart)
+    targetBlockDate.setDate(targetBlockDate.getDate() + dayOffset)
+
+    return {
+      ...pattern,
+      id: `${pattern.id}-w${weeksDiff}`, // ID unique généré
+      date: formatDateISO(targetBlockDate),
+      patternId: pattern.patternId || pattern.id, // Référence au pattern source
+    }
+  })
+}
+
+/**
+ * Récupère tous les blocs d'un agenda pour une semaine donnée
+ * Inclut les blocs générés à la volée si mode = cycle
+ * @param agenda - L'agenda
+ * @param weekStart - Date de début de semaine
+ * @returns Tous les blocs de la semaine (réels + générés)
+ */
+export function getBlocksForWeek(
+  agenda: Agenda,
+  weekStart: string
+): AgendaBlock[] {
+  if (agenda.modeConfig.mode === 'simple') {
+    // Mode simple : retourner uniquement les blocs réels
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekEnd.getDate() + 7)
+    return agenda.blocks.filter((block) => {
+      const blockDate = new Date(block.date)
+      return blockDate >= new Date(weekStart) && blockDate < weekEnd
+    })
+  } else if (agenda.modeConfig.mode === 'cycle') {
+    // Mode cycle : générer les blocs pour cette semaine
+    return generateCycleBlocksForWeek(agenda, weekStart)
+  }
+
+  return []
 }
 
 // ========== SAUVEGARDER UN AGENDA ==========
@@ -46,10 +128,14 @@ export async function saveAgenda(agenda: Agenda): Promise<{
     // 1. Sauvegarder l'agenda principal
     const { error: agendaError } = await supabase.from('agendas').upsert({
       id: agenda.id,
-      user_id: user.id, // Utiliser le user_id de la session
+      user_id: user.id,
       name: agenda.name,
-      layout: agenda.layout,
       current_week_start: agenda.currentWeekStart,
+      // Nouvelles propriétés
+      mode_config: agenda.modeConfig,
+      time_slot_display: agenda.timeSlotDisplay,
+      fixed_periods: agenda.fixedPeriods || null,
+      active_days: agenda.activeDays,
       updated_at: new Date().toISOString(),
     })
 
@@ -86,6 +172,7 @@ export async function saveAgenda(agenda: Agenda): Promise<{
         start_time: block.start,
         end_time: block.end,
         label: block.label || null,
+        pattern_id: block.patternId || null, // Pour les blocs générés par cycle
       }))
 
       const { error: blocksError } = await supabase
@@ -188,8 +275,12 @@ export async function loadAgenda(agendaId: string): Promise<{
       id: agendaData.id,
       user_id: agendaData.user_id,
       name: agendaData.name,
-      layout: agendaData.layout,
       currentWeekStart: agendaData.current_week_start,
+      // Nouvelles propriétés
+      modeConfig: agendaData.mode_config,
+      timeSlotDisplay: agendaData.time_slot_display,
+      fixedPeriods: agendaData.fixed_periods || undefined,
+      activeDays: agendaData.active_days,
       members: membersData.map((m) => ({
         id: m.id,
         name: m.name,
@@ -197,11 +288,12 @@ export async function loadAgenda(agendaId: string): Promise<{
       })),
       blocks: blocksData.map((b) => ({
         id: b.id,
-        memberIds: memberIdsByBlock[b.id] || [], // 🆕 Array de memberIds
+        memberIds: memberIdsByBlock[b.id] || [],
         date: b.date,
         start: b.start_time,
         end: b.end_time,
         label: b.label || undefined,
+        patternId: b.pattern_id || undefined,
       })),
       created_at: agendaData.created_at,
       updated_at: agendaData.updated_at,

@@ -5,6 +5,8 @@ import {
   Agenda,
   AgendaBlock,
   Member,
+  AgendaMode,
+  TimeSlotDisplay,
   getMonday,
   formatDateISO,
 } from '@/types/agenda'
@@ -24,7 +26,7 @@ interface EditorState {
 
   // Actions pour l'agenda
   setAgenda: (agenda: Agenda) => void
-  createNewAgenda: () => void
+  createNewAgenda: (mode?: AgendaMode, timeSlotDisplay?: TimeSlotDisplay) => void
   updateAgendaName: (name: string) => void
 
   // Actions pour les membres
@@ -63,17 +65,25 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   // Créer un nouvel agenda
-  createNewAgenda: () => {
+  createNewAgenda: (mode = 'simple' as AgendaMode, timeSlotDisplay = 'precise-hours' as TimeSlotDisplay) => {
     const today = new Date()
     const monday = getMonday(today)
+
+    // Construire la config selon le mode
+    const modeConfig = mode === 'cycle'
+      ? { mode: 'cycle' as const, cycleConfig: { cycleWeeks: 2, repeatIndefinitely: true } }
+      : { mode: 'simple' as const }
 
     const newAgenda: Agenda = {
       id: uuidv4(),
       name: 'Nouvel agenda',
       members: [],
       blocks: [],
-      layout: 'weekly',
       currentWeekStart: formatDateISO(monday),
+      // Nouvelles propriétés configurables
+      modeConfig,
+      timeSlotDisplay,
+      activeDays: [1, 2, 3, 4, 5, 6, 0], // Tous les jours par défaut
       created_at: new Date().toISOString(),
     }
     set({ agenda: newAgenda, selectedBlockId: null })

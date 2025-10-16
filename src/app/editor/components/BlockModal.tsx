@@ -12,6 +12,7 @@ interface BlockModalProps {
   onClose: () => void
   memberId?: string // Membre pré-sélectionné (optionnel)
   date?: string
+  period?: string // Période pré-sélectionnée (Matin/Soir) en mode fixed-periods
   blockToEdit?: AgendaBlock | null
 }
 
@@ -20,10 +21,14 @@ function BlockModal({
   onClose,
   memberId: initialMemberId,
   date: initialDate,
+  period: initialPeriod,
   blockToEdit,
 }: BlockModalProps) {
   const { agenda, addBlock, updateBlock, removeBlock } = useEditorStore()
   const cancelButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Déterminer si on est en mode périodes fixes
+  const isFixedPeriods = agenda?.timeSlotDisplay === 'fixed-periods'
 
   // États du formulaire
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
@@ -63,9 +68,10 @@ function BlockModal({
       setDate(initialDate || '')
       setStart('09:00')
       setEnd('10:00')
-      setLabel('')
+      // En mode périodes fixes, pré-remplir le label avec la période
+      setLabel(isFixedPeriods && initialPeriod ? initialPeriod : '')
     }
-  }, [blockToEdit, initialMemberId, initialDate, isOpen])
+  }, [blockToEdit, initialMemberId, initialDate, initialPeriod, isFixedPeriods, isOpen])
 
   const toggleMember = (memberId: string) => {
     setSelectedMemberIds((prev) =>
@@ -78,8 +84,14 @@ function BlockModal({
   const handleSave = () => {
     if (selectedMemberIds.length === 0 || !date) return
 
-    // Validation: l'heure de début doit être avant l'heure de fin
-    if (start >= end) {
+    // En mode périodes fixes, le label est obligatoire
+    if (isFixedPeriods && !label.trim()) {
+      alert("Le label (période) est obligatoire en mode Matin/Soir.")
+      return
+    }
+
+    // Validation: l'heure de début doit être avant l'heure de fin (sauf en mode full-day)
+    if (!isFixedPeriods && start >= end) {
       alert("L'heure de début doit être avant l'heure de fin.")
       return
     }
@@ -225,27 +237,29 @@ function BlockModal({
               onChange={(e) => setDate(e.target.value)}
             />
 
-            {/* Horaires */}
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                type="time"
-                label="Début *"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-              />
-              <Input
-                type="time"
-                label="Fin *"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-              />
-            </div>
+            {/* Horaires - masqués en mode périodes fixes */}
+            {!isFixedPeriods && (
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  type="time"
+                  label="Début *"
+                  value={start}
+                  onChange={(e) => setStart(e.target.value)}
+                />
+                <Input
+                  type="time"
+                  label="Fin *"
+                  value={end}
+                  onChange={(e) => setEnd(e.target.value)}
+                />
+              </div>
+            )}
 
             {/* Label */}
             <Input
               type="text"
-              label="Label (optionnel)"
-              placeholder="Ex: Matin, Réunion, etc."
+              label={isFixedPeriods ? "Période *" : "Label (optionnel)"}
+              placeholder={isFixedPeriods ? "Ex: Matin, Soir" : "Ex: Réunion, Formation"}
               value={label}
               onChange={(e) => setLabel(e.target.value)}
             />

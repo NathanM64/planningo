@@ -1,271 +1,205 @@
--- ========================================
--- PLANNINGO - Script de migration complet v2
--- Avec support de plusieurs membres par bloc
--- ========================================
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
--- 1. SUPPRESSION DE L'ANCIEN SCHÉMA
--- ========================================
-
--- Supprimer les anciennes tables et leurs dépendances
--- L'ordre est important : d'abord les tables de liaison, puis les tables principales
-DROP TABLE IF EXISTS public.blocks_members CASCADE;
-DROP TABLE IF EXISTS public.blocks CASCADE;
-DROP TABLE IF EXISTS public.members CASCADE;
-DROP TABLE IF EXISTS public.agendas CASCADE;
-
--- Supprimer la fonction si elle existe
-DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
-
--- 2. CRÉATION DU NOUVEAU SCHÉMA (4 TABLES)
--- ========================================
-
--- Table des agendas
 CREATE TABLE public.agendas (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  layout TEXT NOT NULL DEFAULT 'weekly' CHECK (layout IN ('daily', 'weekly', 'monthly')),
-  current_week_start TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid,
+  name text NOT NULL,
+  layout text NOT NULL DEFAULT 'weekly'::text CHECK (layout = ANY (ARRAY['daily'::text, 'weekly'::text, 'monthly'::text])),
+  current_week_start text NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT agendas_pkey PRIMARY KEY (id),
+  CONSTRAINT agendas_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
 );
-
--- Table des membres
-CREATE TABLE public.members (
-  id UUID PRIMARY KEY,
-  agenda_id UUID NOT NULL REFERENCES public.agendas(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  color TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Table des blocs (sans member_id direct)
 CREATE TABLE public.blocks (
-  id UUID PRIMARY KEY,
-  agenda_id UUID NOT NULL REFERENCES public.agendas(id) ON DELETE CASCADE,
-  date TEXT NOT NULL,
-  start_time TEXT NOT NULL,
-  end_time TEXT NOT NULL,
-  label TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id uuid NOT NULL,
+  agenda_id uuid NOT NULL,
+  date text NOT NULL,
+  start_time text NOT NULL,
+  end_time text NOT NULL,
+  label text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT blocks_pkey PRIMARY KEY (id),
+  CONSTRAINT blocks_agenda_id_fkey FOREIGN KEY (agenda_id) REFERENCES public.agendas(id)
 );
-
--- Table de liaison Many-to-Many entre blocks et members
 CREATE TABLE public.blocks_members (
-  block_id UUID NOT NULL REFERENCES public.blocks(id) ON DELETE CASCADE,
-  member_id UUID NOT NULL REFERENCES public.members(id) ON DELETE CASCADE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  PRIMARY KEY (block_id, member_id)
+  block_id uuid NOT NULL,
+  member_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT blocks_members_pkey PRIMARY KEY (block_id, member_id),
+  CONSTRAINT blocks_members_block_id_fkey FOREIGN KEY (block_id) REFERENCES public.blocks(id),
+  CONSTRAINT blocks_members_member_id_fkey FOREIGN KEY (member_id) REFERENCES public.members(id)
+);
+CREATE TABLE public.contact_messages (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  email text NOT NULL,
+  subject text NOT NULL,
+  message text NOT NULL,
+  image_data text,
+  created_at timestamp with time zone DEFAULT now(),
+  read boolean DEFAULT false,
+  CONSTRAINT contact_messages_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.members (
+  id uuid NOT NULL,
+  agenda_id uuid NOT NULL,
+  name text NOT NULL,
+  color text NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT members_pkey PRIMARY KEY (id),
+  CONSTRAINT members_agenda_id_fkey FOREIGN KEY (agenda_id) REFERENCES public.agendas(id)
+);
+CREATE TABLE public.stripe_events (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  event_id text NOT NULL UNIQUE,
+  event_type text NOT NULL,
+  processed_at timestamp with time zone NOT NULL DEFAULT now(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT stripe_events_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.users (
+  id uuid NOT NULL,
+  is_pro boolean DEFAULT false,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  first_name text,
+  last_name text,
+  CONSTRAINT users_pkey PRIMARY KEY (id),
+  CONSTRAINT users_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
 
-CREATE TABLE IF NOT EXISTS public.users (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  is_pro BOOLEAN DEFAULT FALSE,
-  stripe_customer_id TEXT,
-  stripe_subscription_id TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE realtime.messages (
+  topic text NOT NULL,
+  extension text NOT NULL,
+  payload jsonb,
+  event text,
+  private boolean DEFAULT false,
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  inserted_at timestamp without time zone NOT NULL DEFAULT now(),
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  CONSTRAINT messages_pkey PRIMARY KEY (id, inserted_at)
+);
+CREATE TABLE realtime.schema_migrations (
+  version bigint NOT NULL,
+  inserted_at timestamp without time zone,
+  CONSTRAINT schema_migrations_pkey PRIMARY KEY (version)
+);
+CREATE TABLE realtime.subscription (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  subscription_id uuid NOT NULL,
+  entity regclass NOT NULL,
+  filters ARRAY NOT NULL DEFAULT '{}'::realtime.user_defined_filter[],
+  claims jsonb NOT NULL,
+  claims_role regrole NOT NULL DEFAULT realtime.to_regrole((claims ->> 'role'::text)),
+  created_at timestamp without time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT subscription_pkey PRIMARY KEY (id)
 );
 
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
-CREATE POLICY "Users can view their own data"
-  ON public.users FOR SELECT
-  USING (auth.uid() = id);
+CREATE TABLE storage.buckets (
+  id text NOT NULL,
+  name text NOT NULL,
+  owner uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  public boolean DEFAULT false,
+  avif_autodetection boolean DEFAULT false,
+  file_size_limit bigint,
+  allowed_mime_types ARRAY,
+  owner_id text,
+  type USER-DEFINED NOT NULL DEFAULT 'STANDARD'::storage.buckettype,
+  CONSTRAINT buckets_pkey PRIMARY KEY (id)
+);
+CREATE TABLE storage.buckets_analytics (
+  id text NOT NULL,
+  type USER-DEFINED NOT NULL DEFAULT 'ANALYTICS'::storage.buckettype,
+  format text NOT NULL DEFAULT 'ICEBERG'::text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT buckets_analytics_pkey PRIMARY KEY (id)
+);
+CREATE TABLE storage.migrations (
+  id integer NOT NULL,
+  name character varying NOT NULL UNIQUE,
+  hash character varying NOT NULL,
+  executed_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT migrations_pkey PRIMARY KEY (id)
+);
+CREATE TABLE storage.objects (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  bucket_id text,
+  name text,
+  owner uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  last_accessed_at timestamp with time zone DEFAULT now(),
+  metadata jsonb,
+  path_tokens ARRAY DEFAULT string_to_array(name, '/'::text),
+  version text,
+  owner_id text,
+  user_metadata jsonb,
+  level integer,
+  CONSTRAINT objects_pkey PRIMARY KEY (id),
+  CONSTRAINT objects_bucketId_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id)
+);
+CREATE TABLE storage.prefixes (
+  bucket_id text NOT NULL,
+  name text NOT NULL,
+  level integer NOT NULL DEFAULT storage.get_level(name),
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT prefixes_pkey PRIMARY KEY (bucket_id, level, name),
+  CONSTRAINT prefixes_bucketId_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id)
+);
+CREATE TABLE storage.s3_multipart_uploads (
+  id text NOT NULL,
+  in_progress_size bigint NOT NULL DEFAULT 0,
+  upload_signature text NOT NULL,
+  bucket_id text NOT NULL,
+  key text NOT NULL,
+  version text NOT NULL,
+  owner_id text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  user_metadata jsonb,
+  CONSTRAINT s3_multipart_uploads_pkey PRIMARY KEY (id),
+  CONSTRAINT s3_multipart_uploads_bucket_id_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id)
+);
+CREATE TABLE storage.s3_multipart_uploads_parts (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  upload_id text NOT NULL,
+  size bigint NOT NULL DEFAULT 0,
+  part_number integer NOT NULL,
+  bucket_id text NOT NULL,
+  key text NOT NULL,
+  etag text NOT NULL,
+  owner_id text,
+  version text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT s3_multipart_uploads_parts_pkey PRIMARY KEY (id),
+  CONSTRAINT s3_multipart_uploads_parts_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES storage.s3_multipart_uploads(id),
+  CONSTRAINT s3_multipart_uploads_parts_bucket_id_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id)
+);
 
-CREATE POLICY "Users can update their own data"
-  ON public.users FOR UPDATE
-  USING (auth.uid() = id);
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
--- 3. INDEX POUR PERFORMANCES
--- ========================================
-
-CREATE INDEX idx_agendas_user_id ON public.agendas(user_id);
-CREATE INDEX idx_members_agenda_id ON public.members(agenda_id);
-CREATE INDEX idx_blocks_agenda_id ON public.blocks(agenda_id);
-CREATE INDEX idx_blocks_date ON public.blocks(date);
-CREATE INDEX idx_blocks_members_block_id ON public.blocks_members(block_id);
-CREATE INDEX idx_blocks_members_member_id ON public.blocks_members(member_id);
-
--- 4. FONCTION POUR AUTO-UPDATE DU TIMESTAMP
--- ========================================
-
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_agendas_updated_at
-  BEFORE UPDATE ON public.agendas
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
-
--- 5. ROW LEVEL SECURITY (RLS)
--- ========================================
-
-ALTER TABLE public.agendas ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.blocks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.blocks_members ENABLE ROW LEVEL SECURITY;
-
--- Politiques pour agendas
-CREATE POLICY "Users can view their own agendas"
-  ON public.agendas FOR SELECT
-  USING (auth.uid() = user_id OR user_id IS NULL);
-
-CREATE POLICY "Users can create agendas"
-  ON public.agendas FOR INSERT
-  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
-
-CREATE POLICY "Users can update their own agendas"
-  ON public.agendas FOR UPDATE
-  USING (auth.uid() = user_id OR user_id IS NULL);
-
-CREATE POLICY "Users can delete their own agendas"
-  ON public.agendas FOR DELETE
-  USING (auth.uid() = user_id OR user_id IS NULL);
-
--- Politiques pour members
-CREATE POLICY "Users can view members of their agendas"
-  ON public.members FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = members.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can create members in their agendas"
-  ON public.members FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = members.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can update members in their agendas"
-  ON public.members FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = members.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can delete members in their agendas"
-  ON public.members FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = members.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
--- Politiques pour blocks
-CREATE POLICY "Users can view blocks of their agendas"
-  ON public.blocks FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = blocks.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can create blocks in their agendas"
-  ON public.blocks FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = blocks.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can update blocks in their agendas"
-  ON public.blocks FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = blocks.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can delete blocks in their agendas"
-  ON public.blocks FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.agendas
-      WHERE agendas.id = blocks.agenda_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
--- Politiques pour blocks_members
-CREATE POLICY "Users can view blocks_members of their agendas"
-  ON public.blocks_members FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.blocks
-      JOIN public.agendas ON agendas.id = blocks.agenda_id
-      WHERE blocks.id = blocks_members.block_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
-CREATE POLICY "Users can manage blocks_members in their agendas"
-  ON public.blocks_members FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.blocks
-      JOIN public.agendas ON agendas.id = blocks.agenda_id
-      WHERE blocks.id = blocks_members.block_id
-      AND (agendas.user_id = auth.uid() OR agendas.user_id IS NULL)
-    )
-  );
-
--- 6. DONNÉES DE TEST (OPTIONNEL)
--- ========================================
-
-/*
--- Agenda de test
-INSERT INTO public.agendas (id, name, layout, current_week_start)
-VALUES ('a1111111-1111-1111-1111-111111111111', 'Salon de coiffure', 'weekly', '2025-01-06');
-
--- Membres
-INSERT INTO public.members (id, agenda_id, name, color) VALUES
-  ('m1111111-1111-1111-1111-111111111111', 'a1111111-1111-1111-1111-111111111111', 'Alice', '#3B82F6'),
-  ('m2222222-2222-2222-2222-222222222222', 'a1111111-1111-1111-1111-111111111111', 'Bob', '#10B981'),
-  ('m3333333-3333-3333-3333-333333333333', 'a1111111-1111-1111-1111-111111111111', 'Charlie', '#F59E0B');
-
--- Bloc avec UN seul membre
-INSERT INTO public.blocks (id, agenda_id, date, start_time, end_time, label)
-VALUES ('b1111111-1111-1111-1111-111111111111', 'a1111111-1111-1111-1111-111111111111', '2025-01-06', '09:00', '12:00', 'Matin');
-
-INSERT INTO public.blocks_members (block_id, member_id)
-VALUES ('b1111111-1111-1111-1111-111111111111', 'm1111111-1111-1111-1111-111111111111');
-
--- Bloc avec PLUSIEURS membres (réunion)
-INSERT INTO public.blocks (id, agenda_id, date, start_time, end_time, label)
-VALUES ('b2222222-2222-2222-2222-222222222222', 'a1111111-1111-1111-1111-111111111111', '2025-01-07', '14:00', '16:00', 'Réunion équipe');
-
-INSERT INTO public.blocks_members (block_id, member_id) VALUES
-  ('b2222222-2222-2222-2222-222222222222', 'm1111111-1111-1111-1111-111111111111'),
-  ('b2222222-2222-2222-2222-222222222222', 'm2222222-2222-2222-2222-222222222222'),
-  ('b2222222-2222-2222-2222-222222222222', 'm3333333-3333-3333-3333-333333333333');
-*/
-
--- ========================================
--- FIN DU SCRIPT
--- ========================================
-
-SELECT 'Migration terminée ! 4 tables créées : agendas, members, blocks, blocks_members' AS status;
+CREATE TABLE vault.secrets (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text,
+  description text NOT NULL DEFAULT ''::text,
+  secret text NOT NULL,
+  key_id uuid,
+  nonce bytea DEFAULT vault._crypto_aead_det_noncegen(),
+  created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT secrets_pkey PRIMARY KEY (id)
+);
