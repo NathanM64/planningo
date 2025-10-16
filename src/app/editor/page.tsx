@@ -10,8 +10,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import EditorToolbar from './components/EditorToolbar'
 import MemberList from './components/MemberList'
-import WeekGrid from './components/WeekGrid'
-import MorningEveningGrid from './components/MorningEveningGrid'
+import GridFactory from './components/grids/GridFactory'
 import PrintableWeek from './components/PrintableWeek'
 import TestModeBanner from './components/TestModeBanner'
 import EditorSkeleton from './components/EditorSkeleton'
@@ -161,13 +160,9 @@ export default function EditorPage() {
             <MemberList />
           </aside>
 
-          {/* Main - Grille hebdomadaire (switch selon timeSlotDisplay) */}
+          {/* Main - Grille hebdomadaire (via GridFactory) */}
           <main className="w-full min-w-0">
-            {agenda.timeSlotDisplay === 'fixed-periods' ? (
-              <MorningEveningGrid />
-            ) : (
-              <WeekGrid />
-            )}
+            <GridFactory />
           </main>
         </div>
       </div>
