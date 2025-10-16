@@ -52,6 +52,7 @@ export function convertTemplateToAgenda(template: AgendaTemplate): Agenda {
     blocks,
     currentWeekStart: formatDateISO(monday),
     // Nouvelles propriétés obligatoires
+    useCase: 'team', // Valeur par défaut pour les templates legacy
     modeConfig: { mode: 'simple' },
     timeSlotDisplay: 'precise-hours',
     activeDays: template.config.activeDays,
@@ -83,6 +84,7 @@ export function convertTemplateToEmptyAgenda(template: AgendaTemplate): Agenda {
     blocks: [], // Pas de blocs pré-remplis
     currentWeekStart: formatDateISO(monday),
     // Nouvelles propriétés obligatoires
+    useCase: 'team', // Valeur par défaut pour les templates legacy
     modeConfig: { mode: 'simple' },
     timeSlotDisplay: 'precise-hours',
     activeDays: template.config.activeDays,

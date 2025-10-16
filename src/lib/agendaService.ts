@@ -132,6 +132,7 @@ export async function saveAgenda(agenda: Agenda): Promise<{
       name: agenda.name,
       current_week_start: agenda.currentWeekStart,
       // Nouvelles propriétés
+      use_case: agenda.useCase,
       mode_config: agenda.modeConfig,
       time_slot_display: agenda.timeSlotDisplay,
       fixed_periods: agenda.fixedPeriods || null,
@@ -277,6 +278,7 @@ export async function loadAgenda(agendaId: string): Promise<{
       name: agendaData.name,
       currentWeekStart: agendaData.current_week_start,
       // Nouvelles propriétés
+      useCase: agendaData.use_case || 'team', // Valeur par défaut pour les anciens agendas
       modeConfig: agendaData.mode_config,
       timeSlotDisplay: agendaData.time_slot_display,
       fixedPeriods: agendaData.fixed_periods || undefined,

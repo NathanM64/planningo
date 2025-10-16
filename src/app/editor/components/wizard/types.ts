@@ -12,6 +12,7 @@ export interface WizardData {
 }
 
 export interface WizardConfig {
+  useCase: UseCaseType
   mode: AgendaMode
   timeSlotDisplay: TimeSlotDisplay
   fixedPeriods?: FixedPeriod[]

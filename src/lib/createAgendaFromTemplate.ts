@@ -34,6 +34,7 @@ export function createAgendaFromTemplate(template: AgendaTemplate): Agenda {
     members: membersWithIds,
     blocks: blocksWithIds,
     currentWeekStart: template.sampleBlocks[0]?.date || new Date().toISOString().split('T')[0],
+    useCase: template.useCase, // Ajouter le useCase du template
     modeConfig: template.mode === 'cycle'
       ? { mode: 'cycle' as const, cycleConfig: { cycleWeeks: 2, repeatIndefinitely: true } }
       : { mode: 'simple' as const },

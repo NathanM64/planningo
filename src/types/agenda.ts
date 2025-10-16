@@ -70,6 +70,8 @@ export type AgendaModeConfig =
 // INTERFACE AGENDA PRINCIPALE
 // ========================================
 
+export type AgendaUseCase = 'team' | 'rotation' | 'personal' | 'other'
+
 export interface Agenda {
   // Propriétés de base
   id: string
@@ -77,6 +79,9 @@ export interface Agenda {
   name: string
   members: Member[]
   blocks: AgendaBlock[]
+
+  // Cas d'usage (détermine le type de grille)
+  useCase: AgendaUseCase
 
   // Mode et configuration (nouvelle architecture)
   modeConfig: AgendaModeConfig
@@ -129,6 +134,7 @@ export const createEmptyAgenda = (): Omit<
     blocks: [],
     currentWeekStart: monday.toISOString().split('T')[0],
     // Nouvelles propriétés avec valeurs par défaut
+    useCase: 'team', // Valeur par défaut
     modeConfig: { mode: 'simple' },
     timeSlotDisplay: 'precise-hours',
     activeDays: [1, 2, 3, 4, 5, 6, 0], // Tous les jours par défaut

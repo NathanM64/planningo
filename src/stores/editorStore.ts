@@ -28,7 +28,7 @@ interface EditorState {
 
   // Actions pour l'agenda
   setAgenda: (agenda: Agenda) => void
-  createNewAgenda: (mode?: AgendaMode, timeSlotDisplay?: TimeSlotDisplay, fixedPeriods?: import('@/types/agenda').FixedPeriod[]) => void
+  createNewAgenda: (useCase?: import('@/types/agenda').AgendaUseCase, mode?: AgendaMode, timeSlotDisplay?: TimeSlotDisplay, fixedPeriods?: import('@/types/agenda').FixedPeriod[]) => void
   updateAgendaName: (name: string) => void
 
   // Actions pour les membres
@@ -73,7 +73,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   // Créer un nouvel agenda
-  createNewAgenda: (mode = 'simple' as AgendaMode, timeSlotDisplay = 'precise-hours' as TimeSlotDisplay, fixedPeriods?: import('@/types/agenda').FixedPeriod[]) => {
+  createNewAgenda: (useCase = 'team' as import('@/types/agenda').AgendaUseCase, mode = 'simple' as AgendaMode, timeSlotDisplay = 'precise-hours' as TimeSlotDisplay, fixedPeriods?: import('@/types/agenda').FixedPeriod[]) => {
     const today = new Date()
     const monday = getMonday(today)
 
@@ -89,6 +89,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       blocks: [],
       currentWeekStart: formatDateISO(monday),
       // Nouvelles propriétés configurables
+      useCase, // Ajouter le useCase
       modeConfig,
       timeSlotDisplay,
       fixedPeriods, // Ajouter les périodes fixes si fournies

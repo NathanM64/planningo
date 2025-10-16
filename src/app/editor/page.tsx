@@ -16,6 +16,7 @@ import TestModeBanner from './components/TestModeBanner'
 import EditorSkeleton from './components/EditorSkeleton'
 import AgendaSetupWizard from './components/wizard/AgendaSetupWizard'
 import KeyboardShortcutsButton from './components/KeyboardShortcutsButton'
+import MembersAvatarList from './components/MembersAvatarList'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import type { WizardConfig } from './components/wizard/types'
 import type { Agenda } from '@/types/agenda'
@@ -112,7 +113,7 @@ export default function EditorPage() {
       setAgenda(templateAgenda)
     } else {
       // Sinon, créer un agenda vierge avec la configuration
-      createNewAgenda(config.mode, config.timeSlotDisplay, config.fixedPeriods)
+      createNewAgenda(config.useCase, config.mode, config.timeSlotDisplay, config.fixedPeriods)
     }
     trackAgendaCreate()
   }
@@ -173,6 +174,9 @@ export default function EditorPage() {
       <div className="flex-1 container mx-auto px-2 sm:px-4 pb-6 max-w-7xl">
         {/* Main - Grille avec sélecteur de vue */}
         <main className="w-full min-w-0 space-y-4">
+          {/* Liste des membres avec avatars */}
+          <MembersAvatarList />
+
           {/* Sélecteur de vue (Week/Month/Day) */}
           <ViewSwitcher />
 

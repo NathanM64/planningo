@@ -150,6 +150,7 @@ function convertWizardDataToConfig(data: WizardData): WizardConfig {
   const defaultView = data.useCase === 'personal' ? 'day' : 'week'
 
   return {
+    useCase: data.useCase!,
     mode,
     timeSlotDisplay,
     fixedPeriods,

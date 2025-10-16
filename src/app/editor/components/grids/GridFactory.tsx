@@ -1,13 +1,13 @@
 'use client'
 
 import { useEditorStore } from '@/stores/editorStore'
-import PreciseHoursGrid from './implementations/PreciseHoursGrid/PreciseHoursGrid'
-import FixedPeriodsGrid from './implementations/FixedPeriodsGrid/FixedPeriodsGrid'
+import WeekViewSimple from './views/WeekViewSimple'
+import WeekViewWithPeriods from './views/WeekViewWithPeriods'
 import MonthView from './views/MonthView'
 import DayView from './views/DayView'
 
 /**
- * Factory Pattern : Sélectionne la vue selon currentView et timeSlotDisplay
+ * Factory Pattern : Sélectionne la vue selon currentView et useCase
  */
 export default function GridFactory() {
   const agenda = useEditorStore((state) => state.agenda)
@@ -25,16 +25,13 @@ export default function GridFactory() {
 
     case 'week':
     default:
-      // Vue semaine : selon le timeSlotDisplay
-      switch (agenda.timeSlotDisplay) {
-        case 'precise-hours':
-          return <PreciseHoursGrid />
-
-        case 'fixed-periods':
-          return <FixedPeriodsGrid />
-
-        default:
-          return <PreciseHoursGrid />
+      // Vue semaine : selon le useCase
+      if (agenda.useCase === 'rotation') {
+        // Rotation → Grille avec périodes en lignes
+        return <WeekViewWithPeriods />
+      } else {
+        // Team, Personal, Other → Vue simple sans lignes
+        return <WeekViewSimple />
       }
   }
 }
